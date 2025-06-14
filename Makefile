@@ -9,10 +9,9 @@ help:
 	@echo "  help       - Show this help message"
 	@echo "  ktb        - Run KTB drawdown script"
 	@echo "  vb         - Run VB drawdown script"
-	@echo "  create-account - Create a new LOC account"
+	@echo "  ktb-create - Create a new KTB LOC account"
 	@echo "  ktb-delete - Delete KTB account from databases"
 	@echo "  clear-logs - Clear error logs"
-	@echo "  delete-data - Delete loan account data from databases"
 	@echo "  setup      - Install dependencies"
 	@echo "  setup-apt  - Install dependencies using apt-get (Ubuntu/Debian)"
 	@echo "  validate   - Validate config.json file"
@@ -30,11 +29,11 @@ vb:
 	@echo "Running VB drawdown script..."
 	node vb-drawdown.js
 
-# Create a new LOC account
-.PHONY: create-account
-create-account:
-	@echo "Creating a new LOC account..."
-	node create-account.js
+# Create a new KTB LOC account
+.PHONY: ktb-create
+ktb-create:
+	@echo "Creating a new KTB LOC account..."
+	node ktb-create-account.js
 
 # Delete KTB account
 .PHONY: ktb-delete
@@ -52,12 +51,6 @@ clear-logs:
 	@echo "Clearing error logs..."
 	node clear-error-log.js
 
-# Delete loan account data
-.PHONY: delete-data
-delete-data:
-	@echo "Deleting loan account data from databases..."
-	node delete-loan-data.js
-
 # Setup dependencies
 .PHONY: setup
 setup:
@@ -65,7 +58,7 @@ setup:
 	@echo "Checking for required tools..."
 	@which node > /dev/null || (echo "node not found. Please install Node.js." && exit 1)
 	@which npm > /dev/null || (echo "npm not found. Please install npm." && exit 1)
-	@which psql > /dev/null || (echo "psql not found. Please install PostgreSQL client." && echo "Note: psql is only required for delete-loan-data.js")
+	@which psql > /dev/null || (echo "psql not found. Please install PostgreSQL client." && echo "Note: PostgreSQL client library is required for ktb-delete-account.js")
 	@echo "All required tools are installed."
 	@echo "Installing Node.js dependencies..."
 	@npm install
@@ -88,4 +81,3 @@ setup-apt:
 validate:
 	@echo "Validating config.json..."
 	@node validate-config.js
-

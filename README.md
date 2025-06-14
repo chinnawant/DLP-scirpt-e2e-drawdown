@@ -6,24 +6,28 @@ This repository contains scripts for interacting with the DCB Lending System API
 
 The repository includes the following main scripts:
 
-1. **ktb-drawdown.js** - Demonstrates a complete lending flow with the following steps:
+1. **ktb-drawdown.js** - Demonstrates a complete KTB lending flow with the following steps:
    - Drawdown Installmentation - Initiates a drawdown request with account and amount details
    - Submit Plan Selection - Selects a repayment plan using the drawdown token
    - Confirm to Saving - Confirms the drawdown to saving account
 
-2. **create-account.js** - Creates a new LOC account by making an API call to the account creation service.
+2. **vb-drawdown.js** - Demonstrates a complete VB lending flow similar to the KTB flow.
 
-3. **clear-error-log.js** - Manages error logs by archiving existing logs and creating new ones.
+3. **ktb-create-account.js** - Creates a new LOC account in the KTB system by making an API call to the account creation endpoint.
 
-4. **delete-loan-data.js** - Deletes loan account data from two databases:
+4. **ktb-delete-account.js** - Deletes KTB account records from databases:
    - orch_loan_account_creation database - loan_account table in public schema
-   - loan_promotional_config database - loan_account table in loan_account schema
+   - proc_loan_account database - loan_account table in public schema
+
+5. **clear-error-log.js** - Manages error logs by archiving existing logs and creating new ones.
+
+6. **validate-config.js** - Validates the config.json file to ensure it contains all required fields.
 
 ## Requirements
 
 - Node.js (v12 or higher)
 - npm (for installing dependencies)
-- `psql` for PostgreSQL database operations (required for delete-loan-data.js)
+- PostgreSQL client library (for ktb-delete-account.js)
 
 ## Installation
 
@@ -49,7 +53,7 @@ The repository includes the following main scripts:
    You'll also need to manually install:
    - Node.js (v12 or higher)
    - npm
-   - PostgreSQL client (for delete-loan-data.js)
+   - PostgreSQL client library (for ktb-delete-account.js)
 
    **Option 2: Using apt-get (Ubuntu/Debian)**
    ```
@@ -119,8 +123,8 @@ make help
 - `make setup` - Install dependencies
 - `make setup-apt` - Install dependencies using apt-get (Ubuntu/Debian)
 - `make validate` - Validate config.json file
-- `make delete-data` - Delete loan account data from databases
-- `make create-account` - Create a new LOC account
+- `make ktb-delete` - Delete KTB account data from databases
+- `make ktb-create` - Create a new KTB LOC account
 
 ### Running the Lending Flow
 
@@ -197,26 +201,58 @@ The script will:
 2. Create a new empty error log file
 3. Store archived logs in the `error_logs_archive` directory
 
-### Deleting Loan Account Data
+### Creating KTB Accounts
 
-To delete loan account data from the databases:
+To create a new KTB LOC account:
 
 ```
-node delete-loan-data.js
+node ktb-create-account.js
 ```
 
 Or using the Makefile:
 
 ```
-make delete-data
+make ktb-create
+```
+
+Or using npm:
+
+```
+npm run ktb-create
 ```
 
 This will:
-1. Delete all records from the `public.loan_account` table in the `orch_loan_account_creation` database
-2. Delete all records from the `loan_account.loan_account` table in the `loan_promotional_config` database
-3. Log all operations to `delete_loan_data_log.txt`
+1. Generate a random contractRefId
+2. Make an API call to create a new LOC account in the KTB system
+3. Update the config.json file with the new contractRefId and account number
+4. Display a summary of the account creation
 
-Note: This script requires PostgreSQL client (`psql`) to be installed and properly configured with access to the target databases.
+### Deleting KTB Account Data
+
+To delete KTB account data from the databases:
+
+```
+node ktb-delete-account.js
+```
+
+Or using the Makefile:
+
+```
+make ktb-delete
+```
+
+Or using npm:
+
+```
+npm run ktb-delete
+```
+
+This will:
+1. Delete the record with the specified contract_ref_id from the `public.loan_account` table in the `orch_loan_account_creation` database
+2. Delete the record with the specified contract_ref_id from the `public.loan_account` table in the `proc_loan_account` database
+3. Display a summary of the deletion operation
+
+Note: This script requires the PostgreSQL client library to be installed and properly configured with access to the target databases.
 
 ## Error Handling
 
