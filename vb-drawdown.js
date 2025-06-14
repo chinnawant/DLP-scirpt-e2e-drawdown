@@ -12,7 +12,6 @@ const {
   colors,
   generateRequestId,
   generateTraceParentUuid,
-  delayAndLog,
   checkResponse,
   makeApiRequest,
   loadConfig
@@ -48,8 +47,6 @@ async function vbDrawdown() {
       ccdId: vbConfig.ccd_id
     };
 
-    // Add delay and log request body
-    await delayAndLog("Step 1: Drawdown Installmentation", requestBody1);
 
     // Make API request
     const response1 = await makeApiRequest(
@@ -93,8 +90,6 @@ async function vbDrawdown() {
       selectedPlanId: vbConfig.selected_plan_id
     };
 
-    // Add delay and log request body
-    await delayAndLog("Step 2: Submit Plan Selection", requestBody2);
 
     // Make API request
     const response2 = await makeApiRequest(
@@ -128,8 +123,6 @@ async function vbDrawdown() {
         note: "test VB drawdown"
       };
 
-      // Add delay and log request body
-      await delayAndLog("Step 3: Confirm to Saving", requestBody3);
 
       // Make API request
       const response3 = await makeApiRequest(

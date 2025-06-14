@@ -178,12 +178,42 @@ async function loadConfig() {
   }
 }
 
+/**
+ * Update configuration in config.json
+ * @param {string} section - Section in config (e.g., 'ktb')
+ * @param {string} key - Key to update
+ * @param {any} value - Value to set
+ * @returns {Promise<void>}
+ */
+async function updateConfig(section, key, value) {
+  try {
+    const configFile = 'config.json';
+
+    // Load current config
+    const config = await loadConfig();
+
+    // Update the specified key
+    if (!config[section]) {
+      config[section] = {};
+    }
+
+    config[section][key] = value;
+
+    // Write updated config back to file
+    await fs.writeFile(configFile, JSON.stringify(config, null, 2), 'utf8');
+
+    console.log(colors.green(`Updated config: ${section}.${key} = ${value}`));
+  } catch (error) {
+    console.log(colors.red(`Error updating config: ${error.message}`));
+  }
+}
+
 module.exports = {
   colors,
   generateRequestId,
   generateTraceParentUuid,
-  delayAndLog,
   checkResponse,
   makeApiRequest,
-  loadConfig
+  loadConfig,
+  updateConfig
 };
