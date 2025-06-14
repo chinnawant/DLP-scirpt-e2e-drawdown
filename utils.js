@@ -182,7 +182,6 @@ module.exports = {
   colors,
   generateRequestId,
   generateTraceParentUuid,
-  delayAndLog,
   checkResponse,
   makeApiRequest,
   loadConfig
