@@ -85,7 +85,7 @@ async function vbCreateAccount() {
       {
         'x-request-id': requestId,
         'x-channel-id': 'DGL',
-        'x-traceparent': '00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01',
+        'x-traceparent': traceParentUuid,
         'x-devops-src': 'dgl',
         'x-devops-dest': 'vb-dlp',
         'x-devops-key': 'saqWi8phhO5w0LiYA03eqIY0aju6x9rI',
