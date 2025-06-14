@@ -10,7 +10,9 @@ help:
 	@echo "  ktb        - Run KTB drawdown script"
 	@echo "  vb         - Run VB drawdown script"
 	@echo "  ktb-create - Create a new KTB LOC account"
+	@echo "  vb-create  - Create a new VB LOC account"
 	@echo "  ktb-delete - Delete KTB account from databases"
+	@echo "  vb-delete  - Delete VB account from databases"
 	@echo "  clear-logs - Clear error logs"
 	@echo "  setup      - Install dependencies"
 	@echo "  setup-apt  - Install dependencies using apt-get (Ubuntu/Debian)"
@@ -35,11 +37,23 @@ ktb-create:
 	@echo "Creating a new KTB LOC account..."
 	node ktb-create-account.js
 
+# Create a new VB LOC account
+.PHONY: vb-create
+vb-create:
+	@echo "Creating a new VB LOC account..."
+	node vb-create-account.js
+
 # Delete KTB account
 .PHONY: ktb-delete
 ktb-delete:
 	@echo "Deleting KTB account from databases..."
 	node ktb-delete-account.js
+
+# Delete VB account
+.PHONY: vb-delete
+vb-delete:
+	@echo "Deleting VB account from databases..."
+	node vb-delete-account.js
 
 # Run both scripts
 .PHONY: all

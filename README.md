@@ -15,13 +15,19 @@ The repository includes the following main scripts:
 
 3. **ktb-create-account.js** - Creates a new LOC account in the KTB system by making an API call to the account creation endpoint.
 
-4. **ktb-delete-account.js** - Deletes KTB account records from databases:
+4. **vb-create-account.js** - Creates a new LOC account in the VB system by making an API call to the account creation endpoint.
+
+5. **ktb-delete-account.js** - Deletes KTB account records from databases:
    - orch_loan_account_creation database - loan_account table in public schema
    - proc_loan_account database - loan_account table in public schema
 
-5. **clear-error-log.js** - Manages error logs by archiving existing logs and creating new ones.
+6. **vb-delete-account.js** - Deletes VB account records from databases:
+   - orch_loan_account_creation database - loan_account table in public schema
+   - proc_loan_account database - loan_account table in public schema
 
-6. **validate-config.js** - Validates the config.json file to ensure it contains all required fields.
+7. **clear-error-log.js** - Manages error logs by archiving existing logs and creating new ones.
+
+8. **validate-config.js** - Validates the config.json file to ensure it contains all required fields.
 
 ## Requirements
 
@@ -124,7 +130,9 @@ make help
 - `make setup-apt` - Install dependencies using apt-get (Ubuntu/Debian)
 - `make validate` - Validate config.json file
 - `make ktb-delete` - Delete KTB account data from databases
+- `make vb-delete` - Delete VB account data from databases
 - `make ktb-create` - Create a new KTB LOC account
+- `make vb-create` - Create a new VB LOC account
 
 ### Running the Lending Flow
 
@@ -227,6 +235,32 @@ This will:
 3. Update the config.json file with the new contractRefId and account number
 4. Display a summary of the account creation
 
+### Creating VB Accounts
+
+To create a new VB LOC account:
+
+```
+node vb-create-account.js
+```
+
+Or using the Makefile:
+
+```
+make vb-create
+```
+
+Or using npm:
+
+```
+npm run vb-create
+```
+
+This will:
+1. Generate a random contractRefId
+2. Make an API call to create a new LOC account in the VB system
+3. Update the config.json file with the new contractRefId and account number
+4. Display a summary of the account creation
+
 ### Deleting KTB Account Data
 
 To delete KTB account data from the databases:
@@ -245,6 +279,33 @@ Or using npm:
 
 ```
 npm run ktb-delete
+```
+
+This will:
+1. Delete the record with the specified contract_ref_id from the `public.loan_account` table in the `orch_loan_account_creation` database
+2. Delete the record with the specified contract_ref_id from the `public.loan_account` table in the `proc_loan_account` database
+3. Display a summary of the deletion operation
+
+Note: This script requires the PostgreSQL client library to be installed and properly configured with access to the target databases.
+
+### Deleting VB Account Data
+
+To delete VB account data from the databases:
+
+```
+node vb-delete-account.js
+```
+
+Or using the Makefile:
+
+```
+make vb-delete
+```
+
+Or using npm:
+
+```
+npm run vb-delete
 ```
 
 This will:
@@ -318,6 +379,10 @@ The Node.js implementation consists of the following files:
 - **utils.js** - Contains utility functions used by all scripts
 - **ktb-drawdown.js** - Node.js version of the KTB drawdown script
 - **vb-drawdown.js** - Node.js version of the VB drawdown script
+- **ktb-create-account.js** - Node.js script to create a new KTB LOC account
+- **vb-create-account.js** - Node.js script to create a new VB LOC account
+- **ktb-delete-account.js** - Node.js script to delete KTB account records from databases
+- **vb-delete-account.js** - Node.js script to delete VB account records from databases
 - **clear-error-log.js** - Node.js version of the error log management script
 - **validate-config.js** - Node.js script to validate the config.json file
 
