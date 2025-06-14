@@ -10,13 +10,13 @@ help:
 	@echo "  ktb        - Run KTB drawdown script"
 	@echo "  vb         - Run VB drawdown script"
 	@echo "  create-account - Create a new LOC account"
+	@echo "  ktb-delete - Delete KTB account from databases"
 	@echo "  clear-logs - Clear error logs"
 	@echo "  delete-data - Delete loan account data from databases"
 	@echo "  setup      - Install dependencies"
 	@echo "  setup-apt  - Install dependencies using apt-get (Ubuntu/Debian)"
 	@echo "  validate   - Validate config.json file"
 	@echo "  all        - Run both KTB and VB drawdown scripts"
-	@echo "  upload     - Upload certificates to Kubernetes pod"
 
 # Run KTB drawdown script
 .PHONY: ktb
@@ -35,6 +35,12 @@ vb:
 create-account:
 	@echo "Creating a new LOC account..."
 	node create-account.js
+
+# Delete KTB account
+.PHONY: ktb-delete
+ktb-delete:
+	@echo "Deleting KTB account from databases..."
+	node ktb-delete-account.js
 
 # Run both scripts
 .PHONY: all
@@ -83,11 +89,3 @@ validate:
 	@echo "Validating config.json..."
 	@node validate-config.js
 
-# Upload certificates to Kubernetes pod
-.PHONY: upload
-upload:
-	@echo "Uploading certificates to Kubernetes pod..."
-	@POD_NAME=$$(kubectl get pods -n default | grep nginx | head -n 1 | awk '{print $$1}') && \
-	echo "Using pod: $$POD_NAME" && \
-kubectl cp ../script-curl default/$$POD_NAME:/root/sq2 || kubectl cp ../script-curl default/$$POD_NAME:/root/sq2
-	@echo Done upload
