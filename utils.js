@@ -33,21 +33,6 @@ function generateTraceParentUuid() {
   return `00-${uuid1}-${uuid2}-01`;
 }
 
-/**
- * Add delay and log request body
- * @param {string} stepName - Name of the step
- * @param {object} requestBody - Request body to log
- * @param {number} delayMs - Delay in milliseconds
- * @returns {Promise<void>}
- */
-async function delayAndLog(stepName, requestBody, delayMs = 1000) {
-  console.log(colors.yellow(`Adding ${delayMs/1000}-second delay before API call...`));
-  console.log(colors.yellow(`Request body for ${stepName}:`));
-  console.log(JSON.stringify(requestBody, null, 2));
-  console.log(colors.yellow(`Waiting for ${delayMs/1000} seconds...`));
-
-  return new Promise(resolve => setTimeout(resolve, delayMs));
-}
 
 /**
  * Check response and extract values

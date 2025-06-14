@@ -12,7 +12,6 @@ const {
   colors,
   generateRequestId,
   generateTraceParentUuid,
-  delayAndLog,
   checkResponse,
   makeApiRequest,
   loadConfig
@@ -49,7 +48,6 @@ async function ktbDrawdown() {
     };
 
     // Add delay and log request body
-    await delayAndLog("Step 1: Drawdown Installmentation", requestBody1);
 
     // Make API request
     const response1 = await makeApiRequest(
@@ -67,7 +65,8 @@ async function ktbDrawdown() {
       requestBody1
     );
 
-      console.log(colors.yellow(`Response: ${JSON.stringify(response1.data)}`));
+      console.log(response1)
+
     // Step 2: Submit Plan Selection
     console.log(colors.green('===== Step 2: Submit Plan Selection ====='));
     
@@ -94,8 +93,6 @@ async function ktbDrawdown() {
       selectedPlanId: ktbConfig.selected_plan_id
     };
 
-    // Add delay and log request body
-    await delayAndLog("Step 2: Submit Plan Selection", requestBody2);
 
     // Make API request
     const response2 = await makeApiRequest(
@@ -129,8 +126,6 @@ async function ktbDrawdown() {
       note: "DISBURSEMENT"
     };
 
-    // Add delay and log request body
-    await delayAndLog("Step 3: Confirm to Saving", requestBody3);
 
     // Make API request
     const response3 = await makeApiRequest(
