@@ -4,21 +4,26 @@ This repository contains scripts for interacting with the DCB Lending System API
 
 ## Overview
 
-The repository includes two main scripts:
+The repository includes the following main scripts:
 
-1. **ktb-drawdown.sh** - Demonstrates a complete lending flow with the following steps:
+1. **ktb-drawdown.js** - Demonstrates a complete lending flow with the following steps:
    - Drawdown Installmentation - Initiates a drawdown request with account and amount details
    - Submit Plan Selection - Selects a repayment plan using the drawdown token
    - Confirm to Saving - Confirms the drawdown to saving account
 
-2. **clear_error_log.sh** - Manages error logs by archiving existing logs and creating new ones.
+2. **create-account.js** - Creates a new LOC account by making an API call to the account creation service.
+
+3. **clear-error-log.js** - Manages error logs by archiving existing logs and creating new ones.
+
+4. **delete-loan-data.js** - Deletes loan account data from two databases:
+   - orch_loan_account_creation database - loan_account table in public schema
+   - loan_promotional_config database - loan_account table in loan_account schema
 
 ## Requirements
 
-- Bash shell environment
-- `curl` for making API requests
-- `jq` for parsing JSON responses
-- `uuidgen` for generating unique identifiers
+- Node.js (v12 or higher)
+- npm (for installing dependencies)
+- `psql` for PostgreSQL database operations (required for delete-loan-data.js)
 
 ## Installation
 
@@ -28,31 +33,30 @@ The repository includes two main scripts:
    cd <repository-directory>
    ```
 
-2. Make the scripts executable:
+2. Install dependencies:
+
+   **Option 1: Manual installation**
    ```
-   chmod +x ktb-drawdown.sh
-   chmod +x clear_error_log.sh
+   npm install
    ```
 
-3. Install dependencies (if not already installed):
+   This will install all the required Node.js dependencies defined in package.json:
+   - axios - For making HTTP requests
+   - chalk - For colored console output
+   - fs-extra - For enhanced file system operations
+   - uuid - For generating UUIDs
 
-   **For macOS:**
-   ```
-   brew install jq curl
-   ```
+   You'll also need to manually install:
+   - Node.js (v12 or higher)
+   - npm
+   - PostgreSQL client (for delete-loan-data.js)
 
-   **For Ubuntu/Debian:**
+   **Option 2: Using apt-get (Ubuntu/Debian)**
    ```
-   apt-get update
-   apt-get install jq curl uuid-runtime
-   ```
-
-   **For CentOS/RHEL:**
-   ```
-   yum install jq curl util-linux
+   make setup-apt
    ```
 
-   Note: You may need to run these commands with appropriate permissions if you don't have sufficient privileges.
+   This will install Node.js, npm, and PostgreSQL client using apt-get, and then install the required Node.js dependencies using npm. Note that this command requires sudo privileges.
 
 ## Configuration
 
@@ -83,8 +87,8 @@ The scripts use a JSON configuration file (`config.json`) to store API request v
 
 The configuration file contains separate sections for each script:
 
-- **ktb section**: Configuration for `ktb-drawdown.sh`
-- **vb section**: Configuration for `vb-drawdown.sh`
+- **ktb section**: Configuration for `ktb-drawdown.js`
+- **vb section**: Configuration for `vb-drawdown.js`
 
 Each section contains the following variables:
 
@@ -107,24 +111,25 @@ The project includes a Makefile to simplify common operations. To see all availa
 make help
 ```
 
-Available targets:
+#### Available Targets:
 - `make ktb` - Run KTB drawdown script
 - `make vb` - Run VB drawdown script
 - `make all` - Run both KTB and VB drawdown scripts
 - `make clear-logs` - Clear error logs
-- `make setup` - Install dependencies and make scripts executable
+- `make setup` - Install dependencies
+- `make setup-apt` - Install dependencies using apt-get (Ubuntu/Debian)
 - `make validate` - Validate config.json file
+- `make delete-data` - Delete loan account data from databases
+- `make create-account` - Create a new LOC account
 
 ### Running the Lending Flow
-
-There are two scripts available for executing the lending flow:
 
 #### KTB Drawdown Script
 
 To execute the KTB lending flow:
 
 ```
-./ktb-drawdown.sh
+node ktb-drawdown.js
 ```
 
 Or using the Makefile:
@@ -133,12 +138,18 @@ Or using the Makefile:
 make ktb
 ```
 
+Or using npm:
+
+```
+npm run ktb
+```
+
 #### VB Drawdown Script
 
 To execute the VB lending flow:
 
 ```
-./vb-drawdown.sh
+node vb-drawdown.js
 ```
 
 Or using the Makefile:
@@ -147,7 +158,13 @@ Or using the Makefile:
 make vb
 ```
 
-Both scripts will:
+Or using npm:
+
+```
+npm run vb
+```
+
+The scripts will:
 1. Initiate a drawdown request
 2. Submit a plan selection
 3. Confirm the drawdown to a saving account (or biller for VB when configured)
@@ -157,10 +174,10 @@ The scripts will automatically handle errors and log them to `error_log.txt`.
 
 ### Managing Error Logs
 
-The `clear_error_log.sh` script is automatically called when an error occurs in the ktb-drawdown script. However, you can also run it manually:
+The `clear-error-log.js` script is automatically called when an error occurs in the scripts. However, you can also run it manually:
 
 ```
-./clear_error_log.sh
+node clear-error-log.js
 ```
 
 Or using the Makefile:
@@ -169,10 +186,37 @@ Or using the Makefile:
 make clear-logs
 ```
 
-This will:
+Or using npm:
+
+```
+npm run clear-logs
+```
+
+The script will:
 1. Archive the current error log with a timestamp
 2. Create a new empty error log file
 3. Store archived logs in the `error_logs_archive` directory
+
+### Deleting Loan Account Data
+
+To delete loan account data from the databases:
+
+```
+node delete-loan-data.js
+```
+
+Or using the Makefile:
+
+```
+make delete-data
+```
+
+This will:
+1. Delete all records from the `public.loan_account` table in the `orch_loan_account_creation` database
+2. Delete all records from the `loan_account.loan_account` table in the `loan_promotional_config` database
+3. Log all operations to `delete_loan_data_log.txt`
+
+Note: This script requires PostgreSQL client (`psql`) to be installed and properly configured with access to the target databases.
 
 ## Error Handling
 
@@ -184,7 +228,7 @@ When an API call fails:
 
 ## Example Output
 
-A successful execution of either script will display output similar to the following (example from ktb-drawdown.sh):
+A successful execution of either script will display output similar to the following (example from ktb-drawdown.js):
 
 ```
 ===== Step 1: Drawdown Installmentation =====
@@ -226,6 +270,37 @@ Drawdown Token: abc123xyz456
 ===== End of Summary =====
 ```
 
+## Node.js Implementation
+
+The repository includes a Node.js implementation of the scripts, which provides several benefits:
+
+### Structure
+
+The Node.js implementation consists of the following files:
+
+- **package.json** - Defines the project dependencies and npm scripts
+- **utils.js** - Contains utility functions used by all scripts
+- **ktb-drawdown.js** - Node.js version of the KTB drawdown script
+- **vb-drawdown.js** - Node.js version of the VB drawdown script
+- **clear-error-log.js** - Node.js version of the error log management script
+- **validate-config.js** - Node.js script to validate the config.json file
+
+### Benefits
+
+The Node.js implementation offers several advantages:
+
+1. **Cross-platform compatibility** - Works on Windows, macOS, and Linux without requiring a Bash shell
+2. **Improved error handling** - Uses JavaScript's try/catch for more robust error handling
+3. **Better maintainability** - Modular code structure with reusable utility functions
+4. **Enhanced HTTP requests** - Uses axios for more reliable HTTP requests with better error handling
+5. **Modern JavaScript features** - Uses async/await for cleaner asynchronous code
+6. **Colored console output** - Uses chalk for consistent and visually appealing console output
+7. **NPM integration** - Can be run using npm scripts for easier integration with other Node.js tools
+
+### Usage
+
+You can run the Node.js scripts directly using Node.js, through the Makefile, or using npm scripts. See the relevant sections above for specific commands.
+
 ## Troubleshooting
 
 If you encounter issues:
@@ -233,7 +308,13 @@ If you encounter issues:
 1. Check the `error_log.txt` file for detailed error information
 2. Verify your network connection to the API endpoints
 3. Ensure all required dependencies are installed
+   - Node.js, npm, and the npm dependencies
 4. Check that the API credentials and parameters are correct
+5. Verify that the config.json file is valid and contains all required fields
+6. SSL Certificate Issues:
+   - The application is configured to accept self-signed certificates for development/testing environments
+   - If you encounter "Network error: self-signed certificate" issues, the application should handle this automatically
+   - This setting is appropriate for non-production environments only and should be reviewed for production deployments
 
 ## License
 

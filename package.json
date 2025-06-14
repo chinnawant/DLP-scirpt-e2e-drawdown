@@ -1,0 +1,27 @@
+{
+  "name": "dcb-lending-scripts",
+  "version": "1.0.0",
+  "description": "Node.js scripts for interacting with the DCB Lending System API",
+  "main": "index.js",
+  "scripts": {
+    "ktb": "node ktb-drawdown.js",
+    "vb": "node vb-drawdown.js",
+    "clear-logs": "node clear-error-log.js",
+    "all": "npm run ktb && npm run vb",
+    "validate": "node validate-config.js"
+  },
+  "keywords": [
+    "dcb",
+    "lending",
+    "api",
+    "scripts"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.1.1",
+    "uuid": "^9.0.1"
+  }
+}

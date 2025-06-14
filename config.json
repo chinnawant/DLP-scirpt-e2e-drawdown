@@ -5,7 +5,8 @@
     "disburse_amount": "5000.00",
     "to_account_no": "1640002707",
     "product_market_code": "2003",
-    "selected_plan_id": "1"
+    "selected_plan_id": "1",
+    "contract_ref_id": "1"
   },
   "vb": {
     "base_url": "https://intgw-dlp-sit.ktb-core-bank.nonprod.aws.ktbcloud",
