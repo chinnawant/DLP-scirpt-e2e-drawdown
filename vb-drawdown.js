@@ -6,6 +6,7 @@
  * 1. Drawdown Installmentation - Initiates a drawdown request with account and amount details
  * 2. Submit Plan Selection - Selects a repayment plan using the drawdown token from step 1
  * 3. Confirm to Saving/Biller - Confirms the drawdown to saving account or biller based on drawdown_type
+ * 4. Get Amortization Table - Retrieves the amortization table for the drawdown
  */
 
 const {
@@ -26,6 +27,14 @@ async function vbDrawdown() {
     const config = await loadConfig();
     const vbConfig = config.vb;
 
+    // Define request body for step 4
+    const requestBody4 = {
+      accountNumber: vbConfig.loc_account_no,
+      drawdownAmount: parseFloat(vbConfig.disburse_amount),
+      tenor: 12,
+      promotionalInterestRate: "10"
+    };
+
     // Generate random UUIDs for headers
     const channelTxnRefId = generateRequestId();
     const traceParentUuid = generateTraceParentUuid();
@@ -33,7 +42,7 @@ async function vbDrawdown() {
     // Step 1: Drawdown Installmentation
     console.log(colors.green('===== Step 1: Drawdown Installmentation ====='));
     console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/installmentation`));
-    
+
     const requestId1 = generateRequestId();
     console.log(colors.yellow(`Using request ID: ${requestId1}`));
 
@@ -66,7 +75,7 @@ async function vbDrawdown() {
 
     // Step 2: Submit Plan Selection
     console.log(colors.green('===== Step 2: Submit Plan Selection ====='));
-    
+
     // Extract drawdownToken from step 1 response
     const drawdownToken = await checkResponse(response1, 'data.drawdownToken', '', 'DRAWDOWN_TOKEN');
     console.log(colors.yellow(`Extracted drawdownToken: ${drawdownToken}`));
@@ -79,7 +88,7 @@ async function vbDrawdown() {
     }
 
     console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/submit-to-saving`));
-    
+
     const requestId2 = generateRequestId();
     console.log(colors.yellow(`Using request ID: ${requestId2}`));
 
@@ -109,11 +118,11 @@ async function vbDrawdown() {
 
     // Step 3: Confirm Drawdown (to Saving or Biller based on drawdown_type)
     const drawdownType = vbConfig.drawdown_type;
-    
+
     if (drawdownType === 'Saving') {
       console.log(colors.green('===== Step 3: Confirm to Saving ====='));
       console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/confirm-to-saving`));
-      
+
       const requestId3 = generateRequestId();
       console.log(colors.yellow(`Using request ID: ${requestId3}`));
 
@@ -142,7 +151,7 @@ async function vbDrawdown() {
     } else if (drawdownType === 'bill') {
       console.log(colors.green('===== Step 3: Confirm to Biller ====='));
       console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/confirm-to-biller`));
-      
+
       const requestId3 = generateRequestId();
       console.log(colors.yellow(`Using request ID: ${requestId3}`));
 
@@ -173,6 +182,32 @@ async function vbDrawdown() {
       console.log(colors.red(`Error: Invalid DRAWDOWN_TYPE value: ${drawdownType}. Must be 'Saving' or 'bill'.`));
       process.exit(1);
     }
+
+    // Step 4: Get Amortization Table
+    console.log(colors.green('===== Step 4: Get Amortization Table ====='));
+    console.log('');
+    console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/amortization-table`));
+
+    const requestId4 = generateRequestId();
+    console.log(colors.yellow(`Using request ID: ${requestId4}`));
+
+    // Make API request
+    const response4 = await makeApiRequest(
+      'post',
+      'https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/amortization-table',
+      {
+        'x-request-id': requestId4,
+        'x-channel-id': 'BIB',
+        'x-traceparent': traceParentUuid,
+        'x-devops-src': 'bib',
+        'x-devops-dest': 'vb-dlp',
+        'x-devops-key': 'tS19zj2II4CKO0w13UnVGavXQp0KO83u',
+        'Content-Type': 'application/json'
+      },
+      requestBody4
+    );
+
+    console.log(response4);
 
     // Print flow completion message
     console.log(colors.green('===== Flow Completed ====='));

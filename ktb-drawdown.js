@@ -6,6 +6,7 @@
  * 1. Drawdown Installmentation - Initiates a drawdown request with account and amount details
  * 2. Submit Plan Selection - Selects a repayment plan using the drawdown token from step 1
  * 3. Confirm to Saving - Confirms the drawdown to saving account using the drawdown token
+ * 4. Get Amortization Table - Retrieves the amortization table for the drawdown
  */
 
 const {
@@ -17,6 +18,7 @@ const {
   loadConfig
 } = require('./utils');
 
+
 /**
  * Main function to execute the KTB drawdown flow
  */
@@ -26,6 +28,14 @@ async function ktbDrawdown() {
     const config = await loadConfig();
     const ktbConfig = config.ktb;
 
+    // Define request body for step 4
+    const requestBody4 = {
+      accountNumber: ktbConfig.loc_account_no,
+      drawdownAmount: parseFloat(ktbConfig.disburse_amount),
+      tenor: 0,
+      promotionalInterestRate: ""
+    };
+
     // Generate random UUIDs for headers
     const channelTxnRefId = generateRequestId();
     const traceParentUuid = generateTraceParentUuid();
@@ -33,7 +43,7 @@ async function ktbDrawdown() {
     // Step 1: Drawdown Installmentation
     console.log(colors.green('===== Step 1: Drawdown Installmentation ====='));
     console.log(colors.yellow(`Calling POST ${ktbConfig.base_url}/dcb/lending/v1/drawdown/installmentation`));
-    
+
     const requestId1 = generateRequestId();
     console.log(colors.yellow(`Using request ID: ${requestId1}`));
 
@@ -69,9 +79,14 @@ async function ktbDrawdown() {
 
     // Step 2: Submit Plan Selection
     console.log(colors.green('===== Step 2: Submit Plan Selection ====='));
-    
+
     // Extract drawdownToken from step 1 response
     const drawdownToken = await checkResponse(response1, 'data.drawdownToken', '', 'DRAWDOWN_TOKEN');
+
+    const resp1Data =  response1.data[parseInt(ktbConfig.selected_plan_id)];
+    requestBody4.tenor = resp1Data.tenor;
+    requestBody4.promotionalInterestRate = resp1Data.interestRate
+
     console.log(colors.yellow(`Extracted drawdownToken: ${drawdownToken}`));
 
     // Check if drawdownToken was successfully extracted
@@ -82,7 +97,7 @@ async function ktbDrawdown() {
     }
 
     console.log(colors.yellow(`Calling POST ${ktbConfig.base_url}/dcb/lending/v1/drawdown/submit-to-saving`));
-    
+
     const requestId2 = generateRequestId();
     console.log(colors.yellow(`Using request ID: ${requestId2}`));
 
@@ -115,7 +130,7 @@ async function ktbDrawdown() {
     console.log('');
     console.log(colors.yellow(`Calling POST ${ktbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-saving`));
     console.log(colors.yellow(`Extracted drawdownToken: ${drawdownToken}`));
-    
+
     const requestId3 = generateRequestId();
     console.log(colors.yellow(`Using request ID: ${requestId3}`));
     console.log(colors.yellow(`TRACE_PARENT_UUID: ${traceParentUuid}`));
@@ -142,6 +157,32 @@ async function ktbDrawdown() {
       },
       requestBody3
     );
+
+    // Step 4: Get Amortization Table
+    console.log(colors.green('===== Step 4: Get Amortization Table ====='));
+    console.log('');
+    console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.ktb-core-bank.nonprod.aws.ktbcloud/dcb/lending/v1/drawdown/amortization-table`));
+
+    const requestId4 = generateRequestId();
+    console.log(colors.yellow(`Using request ID: ${requestId4}`));
+
+    // Make API request
+    const response4 = await makeApiRequest(
+      'post',
+      `https://intgw-dlp-sit.ktb-core-bank.nonprod.aws.ktbcloud/dcb/lending/v1/drawdown/amortization-table`,
+      {
+        'x-request-id': requestId4,
+        'x-channel-id': 'PT',
+        'x-traceparent': traceParentUuid,
+        'x-devops-src': 'bib',
+        'x-devops-dest': 'ktb-dlp',
+        'x-devops-key': 'RbRrmnA2HKy0O1medxxd04Zyd52BVLht',
+        'Content-Type': 'application/json'
+      },
+      requestBody4
+    );
+
+    console.log(response4);
 
     // Print flow completion message
     console.log(colors.green('===== Flow Completed ====='));
