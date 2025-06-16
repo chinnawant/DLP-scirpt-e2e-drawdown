@@ -95,7 +95,7 @@ async function vbCreateAccount() {
     );
 
     // Extract account number and contractRefId from response
-    const accountNumber = await checkResponse(response, 'data.accountNo', '', 'ACCOUNT_NUMBER');
+    const accountNumber = await checkResponse(response, 'data.accountNumber', '', 'ACCOUNT_NUMBER');
     const responseContractRefId = await checkResponse(response, 'data.contractRefId', requestBody.contractRefId, 'CONTRACT_REF_ID');
 
     // Save contractRefId to config.json
