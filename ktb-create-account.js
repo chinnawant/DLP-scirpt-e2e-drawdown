@@ -115,7 +115,7 @@ async function ktbCreateAccount() {
     }
 
     if (accountNumber) {
-      await updateConfig('vb', 'loc_account_no', accountNumber);
+      await updateConfig('ktb', 'loc_account_no', accountNumber);
     }
     // Note: We're no longer saving accountNumber to config.json
     // Instead, we're using the existing value from ktb.loc_account_no
