@@ -31,7 +31,7 @@ async function ktbDrawdown() {
     // Define request body for step 4
     const requestBody4 = {
       accountNumber: ktbConfig.loc_account_no,
-      drawdownAmount: parseFloat(ktbConfig.disburse_amount),
+      drawdownAmount: parseFloat(ktbConfig.disburse_amount).toString(),
       tenor: 0,
     };
 
@@ -83,7 +83,6 @@ async function ktbDrawdown() {
     const drawdownToken = await checkResponse(response1, 'data.drawdownToken', '', 'DRAWDOWN_TOKEN');
 
     const resp1Data =  response1.data.data.installmentPlan[parseInt(ktbConfig.selected_plan_id)];
-    requestBody4.tenor = resp1Data.tenor;
     requestBody4.tenor = resp1Data.tenor.toString();
 
     console.log(colors.yellow(`Extracted drawdownToken: ${drawdownToken}`));
