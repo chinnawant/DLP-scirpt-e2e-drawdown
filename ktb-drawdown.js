@@ -75,7 +75,7 @@ async function ktbDrawdown() {
       requestBody1
     );
 
-      console.log(JSON.stringify(response1, null, 2))
+      console.log(JSON.stringify(response1.data, null, 2))
 
     // Step 2: Submit Plan Selection
     console.log(colors.green('===== Step 2: Submit Plan Selection ====='));
