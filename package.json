@@ -10,7 +10,8 @@
     "all": "npm run ktb && npm run vb",
     "validate": "node validate-config.js",
     "ktb-delete": "node ktb-delete-account.js",
-    "ktb-create": "node ktb-create-account.js"
+    "ktb-create": "node ktb-create-account.js",
+    "ktb-balance": "node ktb-balance-inquiry.js"
   },
   "keywords": [
     "dcb",

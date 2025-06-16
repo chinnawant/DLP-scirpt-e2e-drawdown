@@ -30,8 +30,8 @@ async function vbDrawdown() {
     // Define request body for step 4
     const requestBody4 = {
       accountNumber: vbConfig.loc_account_no,
-      drawdownAmount: parseFloat(vbConfig.disburse_amount),
-      tenor: 12,
+      drawdownAmount: parseFloat(vbConfig.disburse_amount).toString(),
+      tenor: 0,
     };
 
     // Generate random UUIDs for headers
