@@ -98,21 +98,20 @@ async function vbCreateAccount() {
     const accountNumber = await checkResponse(response, 'data.accountNo', '', 'ACCOUNT_NUMBER');
     const responseContractRefId = await checkResponse(response, 'data.contractRefId', requestBody.contractRefId, 'CONTRACT_REF_ID');
 
-    // Save contractRefId and accountNumber to config.json
+    // Save contractRefId to config.json
     if (responseContractRefId) {
       await updateConfig('vb', 'contract_ref_id', responseContractRefId);
     }
 
-    if (accountNumber) {
-      await updateConfig('vb', 'loc_account_no', accountNumber);
-    }
+    // Note: We're no longer saving accountNumber to config.json
+    // Instead, we're using the existing value from vb.loc_account_no
 
     // Print summary of the account creation
     console.log(colors.green('===== Account Creation Summary ====='));
     console.log(colors.yellow(`Contract Reference ID: ${responseContractRefId || requestBody.contractRefId}`));
     console.log(colors.yellow(`Product Market Code: ${requestBody.productMarketCode}`));
     console.log(colors.yellow(`Account Name: ${requestBody.accountNameEN}`));
-    console.log(colors.yellow(`Created Account Number: ${accountNumber || 'Not available'}`));
+    console.log(colors.yellow(`Account Number: ${vbConfig.loc_account_no}`));
     console.log(colors.green('===== End of Summary ====='));
 
   } catch (error) {
