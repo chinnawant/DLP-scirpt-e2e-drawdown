@@ -33,7 +33,6 @@ async function ktbDrawdown() {
       accountNumber: ktbConfig.loc_account_no,
       drawdownAmount: parseFloat(ktbConfig.disburse_amount),
       tenor: 0,
-      promotionalInterestRate: ""
     };
 
     // Generate random UUIDs for headers

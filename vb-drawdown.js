@@ -32,7 +32,6 @@ async function vbDrawdown() {
       accountNumber: vbConfig.loc_account_no,
       drawdownAmount: parseFloat(vbConfig.disburse_amount),
       tenor: 12,
-      promotionalInterestRate: "10"
     };
 
     // Generate random UUIDs for headers
