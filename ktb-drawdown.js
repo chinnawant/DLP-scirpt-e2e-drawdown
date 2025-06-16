@@ -84,7 +84,6 @@ async function ktbDrawdown() {
 
     const resp1Data =  response1.data.data.installmentPlan[parseInt(ktbConfig.selected_plan_id)];
     requestBody4.tenor = resp1Data.tenor;
-    requestBody4.promotionalInterestRate = resp1Data.interestRate
 
     console.log(colors.yellow(`Extracted drawdownToken: ${drawdownToken}`));
 
