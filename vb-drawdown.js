@@ -73,6 +73,8 @@ async function vbDrawdown() {
       requestBody1
     );
 
+    console.log(JSON.stringify(requestBody1, null, 2));
+
     // Step 2: Submit Plan Selection
     console.log(colors.green('===== Step 2: Submit Plan Selection ====='));
 
@@ -87,7 +89,13 @@ async function vbDrawdown() {
       process.exit(1);
     }
 
-    console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/submit-to-saving`));
+      const resp1Data =  response1.data.data[parseInt(vbConfig.selected_plan_id)];
+      requestBody4.tenor = resp1Data.tenor;
+      requestBody4.promotionalInterestRate = resp1Data.interestRate
+
+
+
+      console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/submit-to-saving`));
 
     const requestId2 = generateRequestId();
     console.log(colors.yellow(`Using request ID: ${requestId2}`));
@@ -115,6 +123,8 @@ async function vbDrawdown() {
       },
       requestBody2
     );
+
+    console.log(JSON.stringify(requestBody2, null, 2));
 
     // Step 3: Confirm Drawdown (to Saving or Biller based on drawdown_type)
     const drawdownType = vbConfig.drawdown_type;
@@ -148,6 +158,8 @@ async function vbDrawdown() {
         },
         requestBody3
       );
+
+      console.log(JSON.stringify(requestBody3, null, 2));
     } else if (drawdownType === 'bill') {
       console.log(colors.green('===== Step 3: Confirm to Biller ====='));
       console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/confirm-to-biller`));
@@ -160,8 +172,8 @@ async function vbDrawdown() {
         drawdownToken: drawdownToken
       };
 
-      // Add delay and log request body
-      await delayAndLog("Step 3: Confirm to Biller", requestBody3);
+      // Log request body
+      console.log(colors.yellow("Step 3: Confirm to Biller"));
 
       // Make API request
       const response3 = await makeApiRequest(
@@ -178,6 +190,8 @@ async function vbDrawdown() {
         },
         requestBody3
       );
+
+      console.log(JSON.stringify(requestBody3, null, 2));
     } else {
       console.log(colors.red(`Error: Invalid DRAWDOWN_TYPE value: ${drawdownType}. Must be 'Saving' or 'bill'.`));
       process.exit(1);
@@ -207,7 +221,8 @@ async function vbDrawdown() {
       requestBody4
     );
 
-    console.log(response4);
+    console.log(JSON.stringify(requestBody4, null, 2));
+
 
     // Print flow completion message
     console.log(colors.green('===== Flow Completed ====='));

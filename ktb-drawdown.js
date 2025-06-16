@@ -75,7 +75,7 @@ async function ktbDrawdown() {
       requestBody1
     );
 
-      console.log(response1)
+      console.log(JSON.stringify(response1, null, 2))
 
     // Step 2: Submit Plan Selection
     console.log(colors.green('===== Step 2: Submit Plan Selection ====='));
@@ -83,7 +83,7 @@ async function ktbDrawdown() {
     // Extract drawdownToken from step 1 response
     const drawdownToken = await checkResponse(response1, 'data.drawdownToken', '', 'DRAWDOWN_TOKEN');
 
-    const resp1Data =  response1.data[parseInt(ktbConfig.selected_plan_id)];
+    const resp1Data =  response1.data.data[parseInt(ktbConfig.selected_plan_id)];
     requestBody4.tenor = resp1Data.tenor;
     requestBody4.promotionalInterestRate = resp1Data.interestRate
 
@@ -125,6 +125,8 @@ async function ktbDrawdown() {
       requestBody2
     );
 
+      console.log(JSON.stringify(requestBody2, null, 2))
+
     // Step 3: Confirm to Saving
     console.log(colors.green('===== Step 3: Confirm to Saving ====='));
     console.log('');
@@ -158,6 +160,8 @@ async function ktbDrawdown() {
       requestBody3
     );
 
+      console.log(JSON.stringify(requestBody3, null, 2))
+
     // Step 4: Get Amortization Table
     console.log(colors.green('===== Step 4: Get Amortization Table ====='));
     console.log('');
@@ -182,7 +186,7 @@ async function ktbDrawdown() {
       requestBody4
     );
 
-    console.log(response4);
+    console.log(JSON.stringify(requestBody4, null, 2))
 
     // Print flow completion message
     console.log(colors.green('===== Flow Completed ====='));
