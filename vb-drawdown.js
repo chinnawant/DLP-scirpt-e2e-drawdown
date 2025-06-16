@@ -89,7 +89,7 @@ async function vbDrawdown() {
       process.exit(1);
     }
 
-      const resp1Data =  response1.data.data[parseInt(vbConfig.selected_plan_id)];
+      const resp1Data =  response1.data.data.installmentPlan[parseInt(vbConfig.selected_plan_id)];
       requestBody4.tenor = resp1Data.tenor;
       requestBody4.promotionalInterestRate = resp1Data.interestRate
 

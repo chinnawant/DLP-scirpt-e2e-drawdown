@@ -83,7 +83,7 @@ async function ktbDrawdown() {
     // Extract drawdownToken from step 1 response
     const drawdownToken = await checkResponse(response1, 'data.drawdownToken', '', 'DRAWDOWN_TOKEN');
 
-    const resp1Data =  response1.data.data[parseInt(ktbConfig.selected_plan_id)];
+    const resp1Data =  response1.data.data.installmentPlan[parseInt(ktbConfig.selected_plan_id)];
     requestBody4.tenor = resp1Data.tenor;
     requestBody4.promotionalInterestRate = resp1Data.interestRate
 
