@@ -40,7 +40,7 @@ async function vbDrawdown() {
 
     // Step 1: Drawdown Installmentation
     console.log(colors.green('===== Step 1: Drawdown Installmentation ====='));
-    console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/installmentation`));
+    console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/installmentation`));
 
     const requestId1 = generateRequestId();
     console.log(colors.yellow(`Using request ID: ${requestId1}`));
@@ -59,14 +59,14 @@ async function vbDrawdown() {
     // Make API request
     const response1 = await makeApiRequest(
       'post',
-      'https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/installmentation',
+      `${vbConfig.base_url}/dcb/lending/v1/drawdown/installmentation`,
       {
-        'x-devops-src': 'bib',
-        'x-devops-dest': 'vb-dlp',
-        'x-devops-key': 'tS19zj2II4CKO0w13UnVGavXQp0KO83u',
-        'x-channel-id': 'bib',
-        'x-request-id': 'd9881229-79d0-40dc-94bb-2afc5b81eb7f',
-        'x-traceparent': '00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01',
+        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
+        'x-request-id': requestId1,
+        'x-traceparent': traceParentUuid,
         'Content-Type': 'application/json'
       },
       requestBody1
@@ -93,7 +93,7 @@ async function vbDrawdown() {
 
 
 
-      console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/submit-to-saving`));
+      console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/submit-to-saving`));
 
     const requestId2 = generateRequestId();
     console.log(colors.yellow(`Using request ID: ${requestId2}`));
@@ -109,12 +109,12 @@ async function vbDrawdown() {
     // Make API request
     const response2 = await makeApiRequest(
       'post',
-      'https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/submit-to-saving',
+      `${vbConfig.base_url}/dcb/lending/v1/drawdown/submit-to-saving`,
       {
-        'x-devops-src': 'bib',
-        'x-devops-dest': 'vb-dlp',
-        'x-devops-key': 'tS19zj2II4CKO0w13UnVGavXQp0KO83u',
-        'x-channel-id': 'bib',
+        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
         'x-request-id': requestId2,
         'x-traceparent': traceParentUuid,
         'Content-Type': 'application/json'
@@ -129,7 +129,7 @@ async function vbDrawdown() {
 
     if (drawdownType === 'Saving') {
       console.log(colors.green('===== Step 3: Confirm to Saving ====='));
-      console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/confirm-to-saving`));
+      console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-saving`));
 
       const requestId3 = generateRequestId();
       console.log(colors.yellow(`Using request ID: ${requestId3}`));
@@ -144,12 +144,12 @@ async function vbDrawdown() {
       // Make API request
       const response3 = await makeApiRequest(
         'post',
-        'https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/confirm-to-saving',
+        `${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-saving`,
         {
-          'x-devops-src': 'bib',
-          'x-devops-dest': 'vb-dlp',
-          'x-devops-key': 'tS19zj2II4CKO0w13UnVGavXQp0KO83u',
-          'x-channel-id': 'VB',
+          'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+          'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+          'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+          'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
           'x-request-id': requestId3,
           'x-traceparent': traceParentUuid,
           'Content-Type': 'application/json'
@@ -160,7 +160,7 @@ async function vbDrawdown() {
       console.log(JSON.stringify(requestBody3, null, 2));
     } else if (drawdownType === 'bill') {
       console.log(colors.green('===== Step 3: Confirm to Biller ====='));
-      console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/confirm-to-biller`));
+      console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-biller`));
 
       const requestId3 = generateRequestId();
       console.log(colors.yellow(`Using request ID: ${requestId3}`));
@@ -176,12 +176,12 @@ async function vbDrawdown() {
       // Make API request
       const response3 = await makeApiRequest(
         'post',
-        'https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/confirm-to-biller',
+        `${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-biller`,
         {
-          'x-devops-src': 'bib',
-          'x-devops-dest': 'vb-dlp',
-          'x-devops-key': 'tS19zj2II4CKO0w13UnVGavXQp0KO83u',
-          'x-channel-id': 'VB',
+          'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+          'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+          'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+          'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
           'x-request-id': requestId3,
           'x-traceparent': traceParentUuid,
           'Content-Type': 'application/json'
@@ -198,7 +198,7 @@ async function vbDrawdown() {
     // Step 4: Get Amortization Table
     console.log(colors.green('===== Step 4: Get Amortization Table ====='));
     console.log('');
-    console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/amortization-table`));
+    console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/amortization-table`));
 
     const requestId4 = generateRequestId();
     console.log(colors.yellow(`Using request ID: ${requestId4}`));
@@ -206,14 +206,14 @@ async function vbDrawdown() {
     // Make API request
     const response4 = await makeApiRequest(
       'post',
-      'https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/drawdown/amortization-table',
+      `${vbConfig.base_url}/dcb/lending/v1/drawdown/amortization-table`,
       {
         'x-request-id': requestId4,
-        'x-channel-id': 'BIB',
+        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
         'x-traceparent': traceParentUuid,
-        'x-devops-src': 'bib',
-        'x-devops-dest': 'vb-dlp',
-        'x-devops-key': 'tS19zj2II4CKO0w13UnVGavXQp0KO83u',
+        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
         'Content-Type': 'application/json'
       },
       requestBody4

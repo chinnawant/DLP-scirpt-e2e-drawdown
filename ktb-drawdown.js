@@ -64,11 +64,11 @@ async function ktbDrawdown() {
       `${ktbConfig.base_url}/dcb/lending/v1/drawdown/installmentation`,
       {
         'x-request-id': requestId1,
-        'x-channel-id': 'PT',
+        'x-channel-id': ktbConfig.headers.drawdown['x-channel-id'],
         'x-traceparent': traceParentUuid,
-        'x-devops-src': 'bib',
-        'x-devops-dest': 'ktb-dlp',
-        'x-devops-key': 'RbRrmnA2HKy0O1medxxd04Zyd52BVLht',
+        'x-devops-src': ktbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': ktbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': ktbConfig.headers.drawdown['x-devops-key'],
         'Content-Type': 'application/json'
       },
       requestBody1
@@ -113,11 +113,11 @@ async function ktbDrawdown() {
       `${ktbConfig.base_url}/dcb/lending/v1/drawdown/submit-to-saving`,
       {
         'x-request-id': requestId2,
-        'x-channel-id': 'PT',
+        'x-channel-id': ktbConfig.headers.drawdown['x-channel-id'],
         'x-traceparent': traceParentUuid,
-        'x-devops-src': 'bib',
-        'x-devops-dest': 'ktb-dlp',
-        'x-devops-key': 'RbRrmnA2HKy0O1medxxd04Zyd52BVLht',
+        'x-devops-src': ktbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': ktbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': ktbConfig.headers.drawdown['x-devops-key'],
         'Content-Type': 'application/json'
       },
       requestBody2
@@ -148,11 +148,11 @@ async function ktbDrawdown() {
       `${ktbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-saving`,
       {
         'x-request-id': requestId3,
-        'x-channel-id': 'PT',
+        'x-channel-id': ktbConfig.headers.drawdown['x-channel-id'],
         'x-traceparent': traceParentUuid,
-        'x-devops-src': 'bib',
-        'x-devops-dest': 'ktb-dlp',
-        'x-devops-key': 'RbRrmnA2HKy0O1medxxd04Zyd52BVLht',
+        'x-devops-src': ktbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': ktbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': ktbConfig.headers.drawdown['x-devops-key'],
         'Content-Type': 'application/json'
       },
       requestBody3
@@ -171,14 +171,14 @@ async function ktbDrawdown() {
     // Make API request
     const response4 = await makeApiRequest(
       'post',
-      `https://intgw-dlp-sit.ktb-core-bank.nonprod.aws.ktbcloud/dcb/lending/v1/drawdown/amortization-table`,
+      `${ktbConfig.base_url}/dcb/lending/v1/drawdown/amortization-table`,
       {
         'x-request-id': requestId4,
-        'x-channel-id': 'PT',
+        'x-channel-id': ktbConfig.headers.drawdown['x-channel-id'],
         'x-traceparent': traceParentUuid,
-        'x-devops-src': 'bib',
-        'x-devops-dest': 'ktb-dlp',
-        'x-devops-key': 'RbRrmnA2HKy0O1medxxd04Zyd52BVLht',
+        'x-devops-src': ktbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': ktbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': ktbConfig.headers.drawdown['x-devops-key'],
         'Content-Type': 'application/json'
       },
       requestBody4

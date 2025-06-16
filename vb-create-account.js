@@ -28,7 +28,7 @@ async function vbCreateAccount() {
     const traceParentUuid = generateTraceParentUuid();
 
     console.log(colors.green('===== VB Account Creation ====='));
-    console.log(colors.yellow(`Calling POST https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/accounts/loc/create`));
+    console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/accounts/loc/create`));
     console.log(colors.yellow(`Using request ID: ${requestId}`));
 
     // Use hardcoded contractRefId from the curl command
@@ -81,14 +81,14 @@ async function vbCreateAccount() {
     // Make API request
     const response = await makeApiRequest(
       'post',
-      'https://intgw-dlp-sit.core-bank.tripperpix.com/dcb/lending/v1/accounts/loc/create',
+      `${vbConfig.base_url}/dcb/lending/v1/accounts/loc/create`,
       {
         'x-request-id': requestId,
-        'x-channel-id': 'DGL',
+        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
         'x-traceparent': traceParentUuid,
-        'x-devops-src': 'dgl',
-        'x-devops-dest': 'vb-dlp',
-        'x-devops-key': 'saqWi8phhO5w0LiYA03eqIY0aju6x9rI',
+        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
         'Content-Type': 'application/json'
       },
       requestBody
