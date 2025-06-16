@@ -125,7 +125,7 @@ async function ktbCreateAccount() {
     console.log(colors.yellow(`Contract Reference ID: ${responseContractRefId || requestBody.contractRefId}`));
     console.log(colors.yellow(`Product Market Code: ${requestBody.productMarketCode}`));
     console.log(colors.yellow(`Account Name: ${requestBody.accountNameEN}`));
-    console.log(colors.yellow(`Account Number: ${ktbConfig.loc_account_no}`));
+    console.log(colors.yellow(`Account Number: ${accountNumber}`));
     console.log(colors.green('===== End of Summary ====='));
 
   } catch (error) {
