@@ -103,6 +103,12 @@ async function vbCreateAccount() {
       await updateConfig('vb', 'contract_ref_id', responseContractRefId);
     }
 
+
+    if (accountNumber) {
+      await updateConfig('vb', 'loc_account_no', accountNumber);
+    }
+
+
     // Note: We're no longer saving accountNumber to config.json
     // Instead, we're using the existing value from vb.loc_account_no
 
