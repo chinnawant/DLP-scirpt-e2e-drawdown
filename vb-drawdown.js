@@ -89,7 +89,7 @@ async function vbDrawdown() {
     }
 
       const resp1Data =  response1.data.data.installmentPlan[parseInt(vbConfig.selected_plan_id)];
-      requestBody4.tenor = resp1Data.tenor;
+      requestBody4.tenor = resp1Data.tenor.toString();
 
 
 
