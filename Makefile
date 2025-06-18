@@ -1,4 +1,7 @@
 # Makefile for DCB Lending System API Scripts
+K8S_NAMESPACE = default
+K8S_CERT_NAME = nginx-certs
+
 
 # Default target
 .PHONY: help
