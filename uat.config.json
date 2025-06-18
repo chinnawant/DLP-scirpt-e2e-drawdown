@@ -23,6 +23,12 @@
         "x-devops-src": "bib",
         "x-devops-dest": "ktb-dlp",
         "x-devops-key": "h1NDuHZw1zlG37UjY2FxysUgfu0pI4Ny"
+      },
+      "create_account": {
+        "x-channel-id": "dgl",
+        "x-devops-src": "dgl",
+        "x-devops-dest": "ktb-dlp",
+        "x-devops-key": "Hfob5vsU9lECBv3K1hRJrQPYLjrorVva"
       }
     }
   },

@@ -95,11 +95,11 @@ async function ktbCreateAccount() {
       `${ktbConfig.base_url}/dcb/lending/v1/accounts/loc/create`,
       {
         'x-request-id': requestId,
-        'x-channel-id': ktbConfig.headers.drawdown['x-channel-id'],
+        'x-channel-id': ktbConfig.headers.create_account['x-channel-id'],
         'x-traceparent': traceParentUuid,
-        'x-devops-src': ktbConfig.headers.drawdown['x-devops-src'],
-        'x-devops-dest': ktbConfig.headers.drawdown['x-devops-dest'],
-        'x-devops-key': ktbConfig.headers.drawdown['x-devops-key'],
+        'x-devops-src': ktbConfig.headers.create_account['x-devops-src'],
+        'x-devops-dest': ktbConfig.headers.create_account['x-devops-dest'],
+        'x-devops-key': ktbConfig.headers.create_account['x-devops-key'],
         'Content-Type': 'application/json'
       },
       requestBody
