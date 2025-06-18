@@ -132,7 +132,7 @@ async function vbCreateAccount() {
       try {
         // Connect to database
         console.log(colors.green('===== Database Query ====='));
-        dbClient = await connectToDatabase('loan_smart_contract', 'vb');
+        dbClient = await connectToDatabase('proc_loan_account', 'vb');
 
         // Query loan_smart_contract table
         const contractRefId = responseContractRefId || requestBody.contractRefId;
