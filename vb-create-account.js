@@ -2,6 +2,7 @@
  * Script for DCB Lending System - VB Account Creation
  * This script creates a new account in the VB system by making an API call
  * to the account creation endpoint.
+ * It also queries the proc_loan_account database and saves the results to a file.
  */
 
 const {
@@ -13,6 +14,11 @@ const {
   loadConfig,
   updateConfig
 } = require('./utils');
+const {
+  connectToDatabase,
+  queryProcLoanAccount,
+  saveResultsToFile
+} = require('./database');
 
 /**
  * Main function to execute the VB account creation
@@ -84,11 +90,11 @@ async function vbCreateAccount() {
       `${vbConfig.base_url}/dcb/lending/v1/accounts/loc/create`,
       {
         'x-request-id': requestId,
-        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
+        'x-channel-id': vbConfig.headers.create_account['x-channel-id'],
         'x-traceparent': traceParentUuid,
-        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
-        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
-        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+        'x-devops-src': vbConfig.headers.create_account['x-devops-src'],
+        'x-devops-dest': vbConfig.headers.create_account['x-devops-dest'],
+        'x-devops-key': vbConfig.headers.create_account['x-devops-key'],
         'Content-Type': 'application/json'
       },
       requestBody
@@ -119,6 +125,41 @@ async function vbCreateAccount() {
     console.log(colors.yellow(`Account Name: ${requestBody.accountNameEN}`));
     console.log(colors.yellow(`Account Number: ${accountNumber}`));
     console.log(colors.green('===== End of Summary ====='));
+
+    // Query database and save results to file if API call was successful
+    if (accountNumber) {
+      let dbClient = null;
+      try {
+        // Connect to database
+        console.log(colors.green('===== Database Query ====='));
+        dbClient = await connectToDatabase('proc_loan_account', 'vb');
+
+        // Query proc_loan_account table
+        const contractRefId = responseContractRefId || requestBody.contractRefId;
+        console.log(colors.yellow(`Querying proc_loan_account for contract_ref_id: ${contractRefId}`));
+        const queryResult = await queryProcLoanAccount(dbClient, contractRefId);
+
+        // Save results to file
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `./query_results/vb_proc_loan_account_${accountNumber}_${timestamp}.json`;
+        await saveResultsToFile(queryResult.rows, filename);
+
+        console.log(colors.green('===== End of Database Query ====='));
+      } catch (dbError) {
+        console.log(colors.red(`Database operation error: ${dbError.message}`));
+        // Continue execution even if database operations fail
+      } finally {
+        // Close database connection
+        if (dbClient) {
+          try {
+            await dbClient.end();
+            console.log(colors.green('Closed connection to VB proc_loan_account database'));
+          } catch (closeError) {
+            console.log(colors.red(`Error closing VB proc_loan_account connection: ${closeError.message}`));
+          }
+        }
+      }
+    }
 
   } catch (error) {
     console.log(colors.red(`Unhandled error: ${error.message}`));

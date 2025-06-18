@@ -4,63 +4,14 @@
  * where contract_ref_id matches the KTB contract_ref_id from config.json
  */
 
-const { Client } = require('pg');
 const {
   colors,
   loadConfig,
 } = require('./utils');
-
-/**
- * Connect to a PostgreSQL database
- * @param {string} database - Database name
- * @returns {Promise<Client>} PostgreSQL client
- */
-async function connectToDatabase(database) {
-  // Load configuration
-  const config = await loadConfig();
-
-  // Connection details from config.json with environment variables as fallback
-  const client = new Client({
-    host:  config.ktb.db_host ,
-    port: config.ktb.db_port,
-    database: database,
-    user: config.ktb.db_user ,
-    password: config.ktb.db_password,
-    schema: 'public'
-  });
-
-  try {
-    await client.connect();
-    console.log(colors.green(`Connected to ${database} database`));
-    return client;
-  } catch (error) {
-    console.log(colors.red(`Error connecting to ${database} database: ${error.message}`));
-    throw error;
-  }
-}
-
-/**
- * Delete account record from a database
- * @param {Client} client - PostgreSQL client
- * @param {string} contractRefId - Contract reference ID
- * @param {string} databaseName - Database name for logging
- * @returns {Promise<number>} Number of deleted rows
- */
-async function deleteAccount(client, contractRefId, databaseName) {
-  try {
-    const query = {
-      text: 'DELETE FROM public.loan_account WHERE contract_ref_id = $1',
-      values: [contractRefId],
-    };
-
-    const result = await client.query(query);
-    console.log(colors.green(`Deleted ${result.rowCount} rows from ${databaseName}.public.loan_account`));
-    return result.rowCount;
-  } catch (error) {
-    console.log(colors.red(`Error deleting from ${databaseName}: ${error.message}`));
-    throw error;
-  }
-}
+const {
+  connectToDatabase,
+  deleteAccount
+} = require('./database');
 
 /**
  * Main function to execute the KTB account deletion
@@ -83,8 +34,8 @@ async function ktbDeleteAccount() {
     console.log(colors.yellow(`Deleting account with contract_ref_id: ${contractRefId}`));
 
     // Connect to both databases
-    orchClient = await connectToDatabase('orch_loan_account_creation');
-    procClient = await connectToDatabase('proc_loan_account');
+    orchClient = await connectToDatabase('orch_loan_account_creation', 'ktb');
+    procClient = await connectToDatabase('proc_loan_account', 'ktb');
 
     // Delete from both databases
     const orchDeleteCount = await deleteAccount(orchClient, contractRefId, 'orch_loan_account_creation');

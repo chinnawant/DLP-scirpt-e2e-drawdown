@@ -2,6 +2,7 @@
  * Script for DCB Lending System - KTB Account Creation
  * This script creates a new account in the KTB system by making an API call
  * to the account creation endpoint.
+ * It also queries the proc_loan_account database and saves the results to a file.
  */
 
 const {
@@ -13,6 +14,11 @@ const {
   loadConfig,
   updateConfig
 } = require('./utils');
+const {
+  connectToDatabase,
+  queryProcLoanAccount,
+  saveResultsToFile
+} = require('./database');
 
 /**
  * Main function to execute the KTB account creation
@@ -127,6 +133,41 @@ async function ktbCreateAccount() {
     console.log(colors.yellow(`Account Name: ${requestBody.accountNameEN}`));
     console.log(colors.yellow(`Account Number: ${accountNumber}`));
     console.log(colors.green('===== End of Summary ====='));
+
+    // Query database and save results to file if API call was successful
+    if (accountNumber) {
+      let dbClient = null;
+      try {
+        // Connect to database
+        console.log(colors.green('===== Database Query ====='));
+        dbClient = await connectToDatabase('proc_loan_account', 'ktb');
+
+        // Query proc_loan_account table
+        const contractRefId = responseContractRefId || requestBody.contractRefId;
+        console.log(colors.yellow(`Querying proc_loan_account for contract_ref_id: ${contractRefId}`));
+        const queryResult = await queryProcLoanAccount(dbClient, contractRefId);
+
+        // Save results to file
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `./query_results/ktb_proc_loan_account_${accountNumber}_${timestamp}.json`;
+        await saveResultsToFile(queryResult.rows, filename);
+
+        console.log(colors.green('===== End of Database Query ====='));
+      } catch (dbError) {
+        console.log(colors.red(`Database operation error: ${dbError.message}`));
+        // Continue execution even if database operations fail
+      } finally {
+        // Close database connection
+        if (dbClient) {
+          try {
+            await dbClient.end();
+            console.log(colors.green('Closed connection to KTB proc_loan_account database'));
+          } catch (closeError) {
+            console.log(colors.red(`Error closing KTB proc_loan_account connection: ${closeError.message}`));
+          }
+        }
+      }
+    }
 
   } catch (error) {
     console.log(colors.red(`Unhandled error: ${error.message}`));
