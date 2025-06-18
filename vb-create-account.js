@@ -134,10 +134,7 @@ async function vbCreateAccount() {
         console.log(colors.green('===== Database Query ====='));
         dbClient = await connectToDatabase('proc_loan_account', 'vb');
 
-        // Query loan_smart_contract table
-        const contractRefId = responseContractRefId || requestBody.contractRefId;
-        console.log(colors.yellow(`Querying loan_smart_contract for contract_ref_id: ${contractRefId}`));
-        const queryResult = await queryLoanSmartContract(dbClient, contractRefId);
+        const queryResult = await queryLoanSmartContract(dbClient);
 
         // Save results to file
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');

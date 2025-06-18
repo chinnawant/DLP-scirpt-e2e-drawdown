@@ -55,11 +55,10 @@ async function connectToDatabase(database, bank = 'ktb') {
  * @param {string} contractRefId - Contract reference ID
  * @returns {Promise<object>} Query result
  */
-async function queryLoanSmartContract(client, contractRefId) {
+async function queryLoanSmartContract(client) {
   try {
     const query = {
-      text: `SELECT * FROM public.loan_smart_contract WHERE contract_ref_id = $1`,
-      values: [contractRefId],
+      text: `SELECT * FROM public.loan_smart_contract`,
     };
 
     const result = await client.query(query);
