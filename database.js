@@ -47,24 +47,26 @@ async function connectToDatabase(database, bank = 'ktb') {
   }
 }
 
+
+
 /**
- * Query proc_loan_account table
+ * Query loan_smart_contract table
  * @param {Client} client - PostgreSQL client
  * @param {string} contractRefId - Contract reference ID
  * @returns {Promise<object>} Query result
  */
-async function queryProcLoanAccount(client, contractRefId) {
+async function queryLoanSmartContract(client, contractRefId) {
   try {
     const query = {
-      text: `SELECT * FROM public.proc_loan_account WHERE contract_ref_id = $1`,
+      text: `SELECT * FROM public.loan_smart_contract WHERE contract_ref_id = $1`,
       values: [contractRefId],
     };
 
     const result = await client.query(query);
-    console.log(colors.green(`Retrieved ${result.rowCount} rows from public.proc_loan_account`));
+    console.log(colors.green(`Retrieved ${result.rowCount} rows from public.loan_smart_contract`));
     return result;
   } catch (error) {
-    console.log(colors.red(`Error querying proc_loan_account: ${error.message}`));
+    console.log(colors.red(`Error querying loan_smart_contract: ${error.message}`));
     throw error;
   }
 }
@@ -200,7 +202,7 @@ async function deleteRedisData(redisHost, redisPort, redisKey) {
 
 module.exports = {
   connectToDatabase,
-  queryProcLoanAccount,
+  queryLoanSmartContract,
   deleteAccount,
   saveResultsToFile,
   updateLoanSmartContract,

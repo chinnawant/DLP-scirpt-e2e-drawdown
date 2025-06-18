@@ -2,7 +2,7 @@
  * Script for DCB Lending System - VB Account Creation
  * This script creates a new account in the VB system by making an API call
  * to the account creation endpoint.
- * It also queries the proc_loan_account database and saves the results to a file.
+ * It also queries the loan_smart_contract database and saves the results to a file.
  */
 
 const {
@@ -16,7 +16,7 @@ const {
 } = require('./utils');
 const {
   connectToDatabase,
-  queryProcLoanAccount,
+  queryLoanSmartContract,
   saveResultsToFile
 } = require('./database');
 
@@ -132,16 +132,16 @@ async function vbCreateAccount() {
       try {
         // Connect to database
         console.log(colors.green('===== Database Query ====='));
-        dbClient = await connectToDatabase('proc_loan_account', 'vb');
+        dbClient = await connectToDatabase('loan_smart_contract', 'vb');
 
-        // Query proc_loan_account table
+        // Query loan_smart_contract table
         const contractRefId = responseContractRefId || requestBody.contractRefId;
-        console.log(colors.yellow(`Querying proc_loan_account for contract_ref_id: ${contractRefId}`));
-        const queryResult = await queryProcLoanAccount(dbClient, contractRefId);
+        console.log(colors.yellow(`Querying loan_smart_contract for contract_ref_id: ${contractRefId}`));
+        const queryResult = await queryLoanSmartContract(dbClient, contractRefId);
 
         // Save results to file
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const filename = `./query_results/vb_proc_loan_account_${accountNumber}_${timestamp}.json`;
+        const filename = `./query_results/vb_loan_smart_contract_${accountNumber}_${timestamp}.json`;
         await saveResultsToFile(queryResult.rows, filename);
 
         console.log(colors.green('===== End of Database Query ====='));
@@ -153,9 +153,9 @@ async function vbCreateAccount() {
         if (dbClient) {
           try {
             await dbClient.end();
-            console.log(colors.green('Closed connection to VB proc_loan_account database'));
+            console.log(colors.green('Closed connection to VB loan_smart_contract database'));
           } catch (closeError) {
-            console.log(colors.red(`Error closing VB proc_loan_account connection: ${closeError.message}`));
+            console.log(colors.red(`Error closing VB loan_smart_contract connection: ${closeError.message}`));
           }
         }
       }

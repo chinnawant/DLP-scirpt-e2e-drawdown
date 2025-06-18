@@ -1,0 +1,1 @@
+ make  upload-file  FILE=./uat.config.json  DEST=root/sq2/DLP-scirpt-e2e-drawdown
