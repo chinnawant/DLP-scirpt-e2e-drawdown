@@ -18,6 +18,7 @@ help:
 	@echo "  setup-apt  - Install dependencies using apt-get (Ubuntu/Debian)"
 	@echo "  validate   - Validate config.json file"
 	@echo "  all        - Run both KTB and VB drawdown scripts"
+	@echo "  upload-file - Upload file to Kubernetes nginx pod (Usage: make upload-file FILE=path/to/file DEST=destination/path [FORCE=-f])"
 
 # Run KTB drawdown script
 .PHONY: ktb
@@ -95,3 +96,27 @@ setup-apt:
 validate:
 	@echo "Validating config.json..."
 	@node validate-config.js
+
+# Upload specific file to Kubernetes nginx
+.PHONY: upload-file
+upload-file:
+	@if [ -z "$(FILE)" ]; then \
+		echo "Error: FILE parameter is required. Usage: make upload-file FILE=path/to/file DEST=destination/path [FORCE=-f]"; \
+		exit 1; \
+	fi
+	@if [ -z "$(DEST)" ]; then \
+		echo "Error: DEST parameter is required. Usage: make upload-file FILE=path/to/file DEST=destination/path [FORCE=-f]"; \
+		exit 1; \
+	fi
+	@echo "Uploading file $(FILE) to nginx pods in $(K8S_NAMESPACE) namespace at $(DEST)..."
+	@POD_NAME=$$(kubectl get pods -n $(K8S_NAMESPACE) | grep nginx | head -n 1 | awk '{print $$1}'); \
+	if [ -z "$$POD_NAME" ]; then \
+		echo "Error: No nginx pods found in $(K8S_NAMESPACE) namespace"; \
+		exit 1; \
+	fi; \
+	echo "Using pod: $$POD_NAME"; \
+	if [ "$(FORCE)" = "-f" ]; then \
+		echo "Force flag detected. Removing destination file first..."; \
+		kubectl exec -n $(K8S_NAMESPACE) $$POD_NAME -- rm -f $(DEST); \
+	fi; \
+	kubectl cp $(FILE) $(K8S_NAMESPACE)/$$POD_NAME:$(DEST)
