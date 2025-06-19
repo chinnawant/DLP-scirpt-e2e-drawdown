@@ -127,9 +127,6 @@ async function makeApiRequest(method, url, headers, data) {
       }),
     });
 
-    console.log(colors.green('Response:'));
-    console.log(JSON.stringify(response.data, null, 2));
-    console.log('');
 
     return response;
   } catch (error) {
