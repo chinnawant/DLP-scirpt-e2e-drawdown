@@ -23,9 +23,13 @@ const {
  */
 async function vbDrawdown() {
   try {
+    console.log(colors.green('===== Starting VB Drawdown Process ====='));
+
     // Load configuration
+    console.log(colors.yellow('Loading configuration...'));
     const config = await loadConfig();
     const vbConfig = config.vb;
+    console.log(colors.green('Configuration loaded successfully'));
 
     // Define request body for step 4
     const requestBody4 = {
@@ -35,8 +39,10 @@ async function vbDrawdown() {
     };
 
     // Generate random UUIDs for headers
+    console.log(colors.yellow('Generating request IDs and trace parent UUID...'));
     const channelTxnRefId = generateRequestId();
     const traceParentUuid = generateTraceParentUuid();
+    console.log(colors.yellow(`Generated channelTxnRefId: ${channelTxnRefId}`));
 
     // Step 1: Drawdown Installmentation
     console.log(colors.green('===== Step 1: Drawdown Installmentation ====='));
@@ -55,31 +61,43 @@ async function vbDrawdown() {
       ccdId: vbConfig.ccd_id
     };
 
+    // Log request body
+    console.log(colors.yellow('Step 1 - Request Body:'));
+    console.log(JSON.stringify(requestBody1, null, 2));
+
+    // Log headers
+    console.log(colors.yellow('Step 1 - Request Headers:'));
+    const headers1 = {
+      'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+      'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+      'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+      'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
+      'x-request-id': requestId1,
+      'x-traceparent': traceParentUuid,
+      'Content-Type': 'application/json'
+    };
+    console.log(JSON.stringify(headers1, null, 2));
 
     // Make API request
+    console.log(colors.yellow('Step 1 - Sending request...'));
     const response1 = await makeApiRequest(
       'post',
       `${vbConfig.base_url}/dcb/lending/v1/drawdown/installmentation`,
-      {
-        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
-        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
-        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
-        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
-        'x-request-id': requestId1,
-        'x-traceparent': traceParentUuid,
-        'Content-Type': 'application/json'
-      },
+      headers1,
       requestBody1
     );
 
-    console.log(JSON.stringify(requestBody1, null, 2));
+    // Log response
+    console.log(colors.green('Step 1 - Response received:'));
+    console.log(JSON.stringify(response1.data, null, 2));
 
     // Step 2: Submit Plan Selection
     console.log(colors.green('===== Step 2: Submit Plan Selection ====='));
 
     // Extract drawdownToken from step 1 response
+    console.log(colors.yellow('Step 2 - Extracting drawdownToken from Step 1 response...'));
     const drawdownToken = await checkResponse(response1, 'data.drawdownToken', '', 'DRAWDOWN_TOKEN');
-    console.log(colors.yellow(`Extracted drawdownToken: ${drawdownToken}`));
+    console.log(colors.green(`Step 2 - Extracted drawdownToken: ${drawdownToken}`));
 
     // Check if drawdownToken was successfully extracted
     if (!drawdownToken) {
@@ -88,15 +106,15 @@ async function vbDrawdown() {
       process.exit(1);
     }
 
-      const resp1Data =  response1.data.data.installmentPlan[parseInt(vbConfig.selected_plan_id)];
-      requestBody4.tenor = resp1Data.tenor.toString();
+    console.log(colors.yellow('Step 2 - Extracting installment plan data...'));
+    const resp1Data = response1.data.data.installmentPlan[parseInt(vbConfig.selected_plan_id)];
+    requestBody4.tenor = resp1Data.tenor.toString();
+    console.log(colors.yellow(`Step 2 - Selected plan tenor: ${requestBody4.tenor}`));
 
-
-
-      console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/submit-to-saving`));
+    console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/submit-to-saving`));
 
     const requestId2 = generateRequestId();
-    console.log(colors.yellow(`Using request ID: ${requestId2}`));
+    console.log(colors.yellow(`Step 2 - Generated request ID: ${requestId2}`));
 
     // Prepare request body
     const requestBody2 = {
@@ -105,34 +123,49 @@ async function vbDrawdown() {
       selectedPlanId: vbConfig.selected_plan_id
     };
 
+    // Log request body
+    console.log(colors.yellow('Step 2 - Request Body:'));
+    console.log(JSON.stringify(requestBody2, null, 2));
+
+    // Log headers
+    console.log(colors.yellow('Step 2 - Request Headers:'));
+    const headers2 = {
+      'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+      'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+      'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+      'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
+      'x-request-id': requestId2,
+      'x-traceparent': traceParentUuid,
+      'Content-Type': 'application/json'
+    };
+    console.log(JSON.stringify(headers2, null, 2));
 
     // Make API request
+    console.log(colors.yellow('Step 2 - Sending request...'));
     const response2 = await makeApiRequest(
       'post',
       `${vbConfig.base_url}/dcb/lending/v1/drawdown/submit-to-saving`,
-      {
-        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
-        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
-        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
-        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
-        'x-request-id': requestId2,
-        'x-traceparent': traceParentUuid,
-        'Content-Type': 'application/json'
-      },
+      headers2,
       requestBody2
     );
 
-    console.log(JSON.stringify(requestBody2, null, 2));
+    // Log response
+    console.log(colors.green('Step 2 - Response received:'));
+    console.log(JSON.stringify(response2.data, null, 2));
 
     // Step 3: Confirm Drawdown (to Saving or Biller based on drawdown_type)
+    console.log(colors.green('===== Step 3: Confirm Drawdown ====='));
     const drawdownType = vbConfig.drawdown_type;
+    console.log(colors.yellow(`Step 3 - Drawdown type: ${drawdownType}`));
 
     if (drawdownType === 'Saving') {
       console.log(colors.green('===== Step 3: Confirm to Saving ====='));
       console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-saving`));
+      console.log(colors.yellow(`Step 3 - Using drawdownToken from previous steps: ${drawdownToken}`));
 
       const requestId3 = generateRequestId();
-      console.log(colors.yellow(`Using request ID: ${requestId3}`));
+      console.log(colors.yellow(`Step 3 - Generated request ID: ${requestId3}`));
+      console.log(colors.yellow(`Step 3 - Using trace parent UUID: ${traceParentUuid}`));
 
       // Prepare request body
       const requestBody3 = {
@@ -140,30 +173,43 @@ async function vbDrawdown() {
         note: "test VB drawdown"
       };
 
+      // Log request body
+      console.log(colors.yellow('Step 3 - Request Body:'));
+      console.log(JSON.stringify(requestBody3, null, 2));
+
+      // Log headers
+      console.log(colors.yellow('Step 3 - Request Headers:'));
+      const headers3 = {
+        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
+        'x-request-id': requestId3,
+        'x-traceparent': traceParentUuid,
+        'Content-Type': 'application/json'
+      };
+      console.log(JSON.stringify(headers3, null, 2));
 
       // Make API request
+      console.log(colors.yellow('Step 3 - Sending request...'));
       const response3 = await makeApiRequest(
         'post',
         `${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-saving`,
-        {
-          'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
-          'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
-          'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
-          'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
-          'x-request-id': requestId3,
-          'x-traceparent': traceParentUuid,
-          'Content-Type': 'application/json'
-        },
+        headers3,
         requestBody3
       );
 
-      console.log(JSON.stringify(requestBody3, null, 2));
+      // Log response
+      console.log(colors.green('Step 3 - Response received:'));
+      console.log(JSON.stringify(response3.data, null, 2));
     } else if (drawdownType === 'bill') {
       console.log(colors.green('===== Step 3: Confirm to Biller ====='));
       console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-biller`));
+      console.log(colors.yellow(`Step 3 - Using drawdownToken from previous steps: ${drawdownToken}`));
 
       const requestId3 = generateRequestId();
-      console.log(colors.yellow(`Using request ID: ${requestId3}`));
+      console.log(colors.yellow(`Step 3 - Generated request ID: ${requestId3}`));
+      console.log(colors.yellow(`Step 3 - Using trace parent UUID: ${traceParentUuid}`));
 
       // Prepare request body
       const requestBody3 = {
@@ -171,25 +217,34 @@ async function vbDrawdown() {
       };
 
       // Log request body
-      console.log(colors.yellow("Step 3: Confirm to Biller"));
+      console.log(colors.yellow('Step 3 - Request Body:'));
+      console.log(JSON.stringify(requestBody3, null, 2));
+
+      // Log headers
+      console.log(colors.yellow('Step 3 - Request Headers:'));
+      const headers3 = {
+        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
+        'x-request-id': requestId3,
+        'x-traceparent': traceParentUuid,
+        'Content-Type': 'application/json'
+      };
+      console.log(JSON.stringify(headers3, null, 2));
 
       // Make API request
+      console.log(colors.yellow('Step 3 - Sending request...'));
       const response3 = await makeApiRequest(
         'post',
         `${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-biller`,
-        {
-          'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
-          'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
-          'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
-          'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
-          'x-request-id': requestId3,
-          'x-traceparent': traceParentUuid,
-          'Content-Type': 'application/json'
-        },
+        headers3,
         requestBody3
       );
 
-      console.log(JSON.stringify(requestBody3, null, 2));
+      // Log response
+      console.log(colors.green('Step 3 - Response received:'));
+      console.log(JSON.stringify(response3.data, null, 2));
     } else {
       console.log(colors.red(`Error: Invalid DRAWDOWN_TYPE value: ${drawdownType}. Must be 'Saving' or 'bill'.`));
       process.exit(1);
@@ -197,33 +252,49 @@ async function vbDrawdown() {
 
     // Step 4: Get Amortization Table
     console.log(colors.green('===== Step 4: Get Amortization Table ====='));
-    console.log('');
     console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/amortization-table`));
 
     const requestId4 = generateRequestId();
-    console.log(colors.yellow(`Using request ID: ${requestId4}`));
+    console.log(colors.yellow(`Step 4 - Generated request ID: ${requestId4}`));
+    console.log(colors.yellow(`Step 4 - Using trace parent UUID: ${traceParentUuid}`));
+
+    // Log request body
+    console.log(colors.yellow('Step 4 - Request Body:'));
+    console.log(JSON.stringify(requestBody4, null, 2));
+    console.log(colors.yellow(`Step 4 - Using account number: ${requestBody4.accountNumber}`));
+    console.log(colors.yellow(`Step 4 - Using drawdown amount: ${requestBody4.drawdownAmount}`));
+    console.log(colors.yellow(`Step 4 - Using tenor: ${requestBody4.tenor}`));
+
+    // Log headers
+    console.log(colors.yellow('Step 4 - Request Headers:'));
+    const headers4 = {
+      'x-request-id': requestId4,
+      'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
+      'x-traceparent': traceParentUuid,
+      'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
+      'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
+      'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
+      'Content-Type': 'application/json'
+    };
+    console.log(JSON.stringify(headers4, null, 2));
 
     // Make API request
+    console.log(colors.yellow('Step 4 - Sending request...'));
     const response4 = await makeApiRequest(
       'post',
       `${vbConfig.base_url}/dcb/lending/v1/drawdown/amortization-table`,
-      {
-        'x-request-id': requestId4,
-        'x-channel-id': vbConfig.headers.drawdown['x-channel-id'],
-        'x-traceparent': traceParentUuid,
-        'x-devops-src': vbConfig.headers.drawdown['x-devops-src'],
-        'x-devops-dest': vbConfig.headers.drawdown['x-devops-dest'],
-        'x-devops-key': vbConfig.headers.drawdown['x-devops-key'],
-        'Content-Type': 'application/json'
-      },
+      headers4,
       requestBody4
     );
 
-    console.log(JSON.stringify(requestBody4, null, 2));
+    // Log response
+    console.log(colors.green('Step 4 - Response received:'));
+    console.log(JSON.stringify(response4.data, null, 2));
 
 
     // Print flow completion message
     console.log(colors.green('===== Flow Completed ====='));
+    console.log(colors.green(`Drawdown process completed successfully at ${new Date().toISOString()}`));
 
     // Print summary of the flow execution
     console.log(colors.green('===== Flow Execution Summary ====='));
@@ -232,10 +303,42 @@ async function vbDrawdown() {
     console.log(colors.yellow(`To Account Number: ${vbConfig.to_account_no}`));
     console.log(colors.yellow(`Product Market Code: ${vbConfig.product_market_code}`));
     console.log(colors.yellow(`Drawdown Token: ${drawdownToken}`));
+    console.log(colors.yellow(`Selected Plan ID: ${vbConfig.selected_plan_id}`));
+    console.log(colors.yellow(`Tenor: ${requestBody4.tenor}`));
+
+    // Log all request IDs used in the process
+    console.log(colors.yellow('Request IDs used:'));
+    console.log(colors.yellow(`- Step 1 (Drawdown Installmentation): ${requestId1}`));
+    console.log(colors.yellow(`- Step 2 (Submit Plan Selection): ${requestId2}`));
+    console.log(colors.yellow(`- Step 3 (Confirm to ${drawdownType}): ${requestId3 || 'N/A'}`));
+    console.log(colors.yellow(`- Step 4 (Get Amortization Table): ${requestId4}`));
+
     console.log(colors.green('===== End of Summary ====='));
 
   } catch (error) {
-    console.log(colors.red(`Unhandled error: ${error.message}`));
+    console.log(colors.red('===== ERROR OCCURRED ====='));
+    console.log(colors.red(`Error at ${new Date().toISOString()}`));
+    console.log(colors.red(`Error message: ${error.message}`));
+
+    // Log more details about the error if available
+    if (error.response) {
+      console.log(colors.red('API Response Error:'));
+      console.log(colors.red(`Status: ${error.response.status}`));
+      console.log(colors.red(`Status Text: ${error.response.statusText}`));
+      console.log(colors.red('Response Headers:'));
+      console.log(JSON.stringify(error.response.headers, null, 2));
+      console.log(colors.red('Response Data:'));
+      console.log(JSON.stringify(error.response.data, null, 2));
+    } else if (error.request) {
+      console.log(colors.red('No response received from API'));
+      console.log(colors.red('Request details:'));
+      console.log(JSON.stringify(error.request, null, 2));
+    }
+
+    console.log(colors.red('Error stack trace:'));
+    console.log(colors.red(error.stack));
+    console.log(colors.red('===== END OF ERROR ====='));
+
     process.exit(1);
   }
 }
