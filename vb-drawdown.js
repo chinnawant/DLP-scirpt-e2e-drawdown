@@ -106,9 +106,9 @@ async function vbDrawdown() {
       process.exit(1);
     }
 
-    console.log(colors.yellow('Step 2 - Extracting installment plan data...'));
     const resp1Data = response1.data.data.installmentPlan[parseInt(vbConfig.selected_plan_id)];
     requestBody4.tenor = resp1Data.tenor.toString();
+
     console.log(colors.yellow(`Step 2 - Selected plan tenor: ${requestBody4.tenor}`));
 
     console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/submit-to-saving`));

@@ -99,7 +99,6 @@ async function ktbDrawdown() {
     console.log(colors.yellow('Step 2 - Extracting drawdownToken from Step 1 response...'));
     const drawdownToken = await checkResponse(response1, 'data.drawdownToken', '', 'DRAWDOWN_TOKEN');
 
-    console.log(colors.yellow('Step 2 - Extracting installment plan data...'));
     const resp1Data = response1.data.data.installmentPlan[parseInt(ktbConfig.selected_plan_id)];
     requestBody4.tenor = resp1Data.tenor.toString();
     console.log(colors.yellow(`Step 2 - Selected plan tenor: ${requestBody4.tenor}`));
