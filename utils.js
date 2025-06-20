@@ -6,6 +6,7 @@ const fs = require('fs-extra');
 const { v4: uuidv4 } = require('uuid');
 const chalk = require('chalk');
 const axios = require('axios');
+const path = require('path');
 const { clearErrorLogs } = require('./clear-error-log');
 
 // Colors for output
@@ -14,6 +15,15 @@ const colors = {
   red: chalk.red,
   yellow: chalk.yellow
 };
+
+// Default log file path
+const DEFAULT_LOG_DIR = 'logs';
+const DEFAULT_LOG_FILE = 'console.log';
+let logFilePath = path.join(DEFAULT_LOG_DIR, DEFAULT_LOG_FILE);
+let isLoggingEnabled = false;
+
+// Store original console.log function
+const originalConsoleLog = console.log;
 
 /**
  * Generate a new request ID using UUID
@@ -205,6 +215,85 @@ async function updateConfig(section, key, value) {
   }
 }
 
+/**
+ * Enable logging to file
+ * @param {string} [logDir=DEFAULT_LOG_DIR] - Directory to store log files
+ * @param {string} [logFile=DEFAULT_LOG_FILE] - Log file name
+ * @param {boolean} [createTimestampedFile=false] - Whether to create a timestamped log file
+ * @param {string} [locAccountNo=null] - LOC account number to include in the filename
+ * @returns {Promise<void>}
+ */
+async function enableFileLogging(logDir = DEFAULT_LOG_DIR, logFile = DEFAULT_LOG_FILE, createTimestampedFile = false, locAccountNo = null) {
+  try {
+    // Create logs directory if it doesn't exist
+    await fs.ensureDir(logDir);
+
+    // Create timestamped filename if requested
+    if (createTimestampedFile) {
+      const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
+      const fileNameParts = logFile.split('.');
+      const ext = fileNameParts.pop();
+      const name = fileNameParts.join('.');
+
+      // If locAccountNo is provided, use the format loc_account_no-timestamp
+      if (locAccountNo) {
+        logFile = `${locAccountNo}-${timestamp}.${ext}`;
+      } else {
+        logFile = `${name}-${timestamp}.${ext}`;
+      }
+    }
+
+    logFilePath = path.join(logDir, logFile);
+
+    // Create or clear the log file
+    await fs.writeFile(logFilePath, `=== Log started at ${new Date().toISOString()} ===\n\n`);
+
+    // Override console.log
+    console.log = function(...args) {
+      // Call original console.log
+      originalConsoleLog(...args);
+
+      // Write to log file
+      const logMessage = args.map(arg => {
+        if (typeof arg === 'object') {
+          return JSON.stringify(arg, null, 2);
+        }
+        return String(arg);
+      }).join(' ') + '\n';
+
+      fs.appendFileSync(logFilePath, logMessage);
+    };
+
+    isLoggingEnabled = true;
+    console.log(colors.green(`File logging enabled. Logs will be written to: ${logFilePath}`));
+
+    return logFilePath;
+  } catch (error) {
+    originalConsoleLog(colors.red(`Error enabling file logging: ${error.message}`));
+    // Don't override console.log if there was an error
+    return null;
+  }
+}
+
+/**
+ * Disable logging to file and restore original console.log
+ */
+function disableFileLogging() {
+  if (isLoggingEnabled) {
+    console.log = originalConsoleLog;
+    console.log(colors.yellow(`File logging disabled. Log file: ${logFilePath}`));
+    isLoggingEnabled = false;
+  }
+}
+
+/**
+ * Get the current log file path
+ * @returns {string|null} Current log file path or null if logging is disabled
+ */
+function getLogFilePath() {
+  return isLoggingEnabled ? logFilePath : null;
+}
+
 module.exports = {
   colors,
   generateRequestId,
@@ -212,5 +301,8 @@ module.exports = {
   checkResponse,
   makeApiRequest,
   loadConfig,
-  updateConfig
+  updateConfig,
+  enableFileLogging,
+  disableFileLogging,
+  getLogFilePath
 };

@@ -15,7 +15,10 @@ const {
   generateTraceParentUuid,
   checkResponse,
   makeApiRequest,
-  loadConfig
+  loadConfig,
+  enableFileLogging,
+  disableFileLogging,
+  getLogFilePath
 } = require('./utils');
 
 
@@ -26,11 +29,17 @@ async function ktbDrawdown() {
   try {
     console.log(colors.green('===== Starting KTB Drawdown Process ====='));
 
-    // Load configuration
+    // Load configuration first
     console.log(colors.yellow('Loading configuration...'));
     const config = await loadConfig();
     const ktbConfig = config.ktb;
     console.log(colors.green('Configuration loaded successfully'));
+
+    // Enable file logging with a timestamped file using loc_account_no from config
+    const logDir = 'logs';
+    const logFile = 'ktb-drawdown.log';
+    const logPath = await enableFileLogging(logDir, logFile, true, ktbConfig.loc_account_no);
+    console.log(colors.green(`File logging enabled. Logs will be written to: ${logPath}`));
 
     // Define request body for step 4
     const requestBody4 = {
@@ -263,6 +272,11 @@ async function ktbDrawdown() {
 
     console.log(colors.green('===== End of Summary ====='));
 
+    // Disable file logging
+    const finalLogPath = getLogFilePath();
+    disableFileLogging();
+    console.log(colors.green(`File logging disabled. Log file: ${finalLogPath}`));
+
   } catch (error) {
     console.log(colors.red('===== ERROR OCCURRED ====='));
     console.log(colors.red(`Error at ${new Date().toISOString()}`));
@@ -286,6 +300,11 @@ async function ktbDrawdown() {
     console.log(colors.red('Error stack trace:'));
     console.log(colors.red(error.stack));
     console.log(colors.red('===== END OF ERROR ====='));
+
+    // Disable file logging even in case of error
+    const errorLogPath = getLogFilePath();
+    disableFileLogging();
+    console.log(colors.red(`File logging disabled. Error details saved to: ${errorLogPath}`));
 
     process.exit(1);
   }

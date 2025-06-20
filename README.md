@@ -323,6 +323,77 @@ When an API call fails:
 3. A new log file is created
 4. The script execution is terminated with an error message
 
+## File Logging
+
+The scripts support logging console output to files, which is useful for debugging and auditing purposes. This functionality is implemented in the `utils.js` file and is used in the scripts.
+
+### Enabling File Logging
+
+To enable file logging in your script, import the necessary functions and call `enableFileLogging`:
+
+```javascript
+const {
+  enableFileLogging,
+  disableFileLogging,
+  getLogFilePath,
+  loadConfig
+} = require('./utils');
+
+async function myFunction() {
+  // Load configuration to get loc_account_no
+  const config = await loadConfig();
+  const ktbConfig = config.ktb;
+
+  // Enable file logging with default settings (logs/console.log)
+  await enableFileLogging();
+
+  // Or with custom settings
+  const logDir = 'custom_logs';
+  const logFile = 'my-script.log';
+  const createTimestampedFile = true; // Creates a unique file for each run
+
+  // Without account number (uses the format name-timestamp.ext)
+  const logPath1 = await enableFileLogging(logDir, logFile, createTimestampedFile);
+  console.log(`Logs will be written to: ${logPath1}`);
+
+  // With account number (uses the format locAccountNo-timestamp.ext)
+  const logPath2 = await enableFileLogging(logDir, logFile, createTimestampedFile, ktbConfig.loc_account_no);
+  console.log(`Logs will be written to: ${logPath2}`);
+
+  // Your code here...
+  console.log('This will be logged to both console and file');
+
+  // Disable file logging when done
+  disableFileLogging();
+}
+```
+
+### File Logging Options
+
+The `enableFileLogging` function accepts the following parameters:
+
+- `logDir` (string, default: 'logs'): Directory to store log files
+- `logFile` (string, default: 'console.log'): Log file name
+- `createTimestampedFile` (boolean, default: false): Whether to create a timestamped log file
+- `locAccountNo` (string, default: null): LOC account number to include in the filename
+
+When `createTimestampedFile` is set to `true`, a unique log file is created for each run with a timestamp in the filename.
+
+If `locAccountNo` is provided and `createTimestampedFile` is `true`, the log file will be named in the format `locAccountNo-timestamp.ext` (e.g., `300000003664-2023-05-15T12-30-45.log`). This is useful for identifying logs by account number.
+
+If `locAccountNo` is not provided, the log file will be named in the format `name-timestamp.ext` (e.g., `my-script-2023-05-15T12-30-45.log`).
+
+### Checking Log File Path
+
+You can get the current log file path using the `getLogFilePath` function:
+
+```javascript
+const logPath = getLogFilePath();
+console.log(`Current log file: ${logPath}`);
+```
+
+This returns `null` if file logging is not enabled.
+
 ## Example Output
 
 A successful execution of either script will display output similar to the following (example from ktb-drawdown.js):
@@ -367,6 +438,80 @@ Drawdown Token: abc123xyz456
 ===== End of Summary =====
 ```
 
+## Confluence Integration
+
+The repository includes functionality to read content from Confluence pages, which can be useful for retrieving documentation, configuration, or other information stored in Confluence.
+
+### Configuration
+
+To use the Confluence integration, you need to add Confluence configuration to your `config.json` file:
+
+```json
+{
+  "confluence": {
+    "base_url": "https://your-confluence-instance.atlassian.net/wiki",
+    "username": "your-username",
+    "api_token": "your-api-token",
+    "space_key": "your-space-key"
+  },
+  "ktb": {
+    // KTB configuration...
+  },
+  "vb": {
+    // VB configuration...
+  }
+}
+```
+
+The Confluence configuration includes:
+
+- `base_url`: The base URL of your Confluence instance
+- `username`: Your Confluence username
+- `api_token`: Your Confluence API token (can be generated in your Atlassian account settings)
+- `space_key`: The key of the Confluence space containing your pages
+
+### Reading Confluence Pages
+
+To read content from a Confluence page:
+
+```
+node read-confluence-page.js [page-id] [page-title]
+```
+
+Or using npm:
+
+```
+npm run confluence
+```
+
+The script will:
+1. Try to retrieve the page using the provided page ID
+2. If that fails, try to retrieve the page using the provided page title
+3. Display page details and a preview of the content
+4. Save the page content to a file in the `confluence_pages` directory
+
+### Available Functions
+
+The `confluence.js` module provides the following functions:
+
+- `connectToConfluence()` - Loads Confluence configuration from config.json
+- `getPageById(pageId)` - Retrieves a Confluence page by its ID
+- `getPageByTitle(title, spaceKey)` - Retrieves a Confluence page by its title and space key
+- `extractPlainText(page)` - Extracts plain text from the HTML content of a Confluence page
+- `savePageToFile(page, filename)` - Saves the Confluence page content to a file
+
+These functions can be imported and used in your own scripts:
+
+```javascript
+const { getPageById, extractPlainText } = require('./confluence');
+
+async function myFunction() {
+  const page = await getPageById('12345');
+  const text = extractPlainText(page);
+  console.log(text);
+}
+```
+
 ## Node.js Implementation
 
 The repository includes a Node.js implementation of the scripts, which provides several benefits:
@@ -385,6 +530,8 @@ The Node.js implementation consists of the following files:
 - **vb-delete-account.js** - Node.js script to delete VB account records from databases
 - **clear-error-log.js** - Node.js version of the error log management script
 - **validate-config.js** - Node.js script to validate the config.json file
+- **confluence.js** - Module for reading content from Confluence pages
+- **read-confluence-page.js** - Example script demonstrating how to use the confluence.js module
 
 ### Benefits
 

@@ -21,6 +21,7 @@ help:
 	@echo "  setup-apt  - Install dependencies using apt-get (Ubuntu/Debian)"
 	@echo "  validate   - Validate config.json file"
 	@echo "  all        - Run both KTB and VB drawdown scripts"
+	@echo "  confluence - Read content from a Confluence page"
 	@echo "  upload-file - Upload file to Kubernetes nginx pod (Usage: make upload-file FILE=path/to/file DEST=destination/path [FORCE=-f])"
 
 # Run KTB drawdown script
@@ -62,6 +63,12 @@ vb-delete:
 # Run both scripts
 .PHONY: all
 all: ktb vb
+
+# Read content from a Confluence page
+.PHONY: confluence
+confluence:
+	@echo "Reading content from a Confluence page..."
+	node read-confluence-page.js
 
 # Clear error logs
 .PHONY: clear-logs
