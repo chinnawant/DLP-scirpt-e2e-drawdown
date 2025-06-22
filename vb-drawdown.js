@@ -157,13 +157,13 @@ async function vbDrawdown() {
     console.log(colors.green('===== Step 3: Confirm Drawdown ====='));
     const drawdownType = vbConfig.drawdown_type;
     console.log(colors.yellow(`Step 3 - Drawdown type: ${drawdownType}`));
+    const requestId3 = generateRequestId();
 
     if (drawdownType === 'Saving') {
       console.log(colors.green('===== Step 3: Confirm to Saving ====='));
       console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-saving`));
       console.log(colors.yellow(`Step 3 - Using drawdownToken from previous steps: ${drawdownToken}`));
 
-      const requestId3 = generateRequestId();
       console.log(colors.yellow(`Step 3 - Generated request ID: ${requestId3}`));
       console.log(colors.yellow(`Step 3 - Using trace parent UUID: ${traceParentUuid}`));
 
