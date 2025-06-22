@@ -117,7 +117,7 @@ async function ktbCreateAccount() {
 
     // Save contractRefId to config.json
     if (responseContractRefId) {
-      await updateConfig('ktb', 'contract_ref_id', responseContractRefId);
+      await updateConfig('ktb', 'supervisorContractId', responseContractRefId);
     }
 
     if (accountNumber) {
