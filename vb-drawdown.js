@@ -159,7 +159,7 @@ async function vbDrawdown() {
     console.log(colors.yellow(`Step 3 - Drawdown type: ${drawdownType}`));
     const requestId3 = generateRequestId();
 
-    if (drawdownType === 'Saving') {
+    if (drawdownType === 'S') {
       console.log(colors.green('===== Step 3: Confirm to Saving ====='));
       console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-saving`));
       console.log(colors.yellow(`Step 3 - Using drawdownToken from previous steps: ${drawdownToken}`));
@@ -202,7 +202,7 @@ async function vbDrawdown() {
       // Log response
       console.log(colors.green('Step 3 - Response received:'));
       console.log(JSON.stringify(response3.data, null, 2));
-    } else if (drawdownType === 'bill') {
+    } else if (drawdownType === 'B') {
       console.log(colors.green('===== Step 3: Confirm to Biller ====='));
       console.log(colors.yellow(`Calling POST ${vbConfig.base_url}/dcb/lending/v1/drawdown/confirm-to-biller`));
       console.log(colors.yellow(`Step 3 - Using drawdownToken from previous steps: ${drawdownToken}`));
