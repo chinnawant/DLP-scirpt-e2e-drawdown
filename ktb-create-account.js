@@ -46,7 +46,7 @@ async function ktbCreateAccount() {
       contractRefId: contractRefId,
       contractAcceptanceDate: "2025-03-25",
       productId: "63b692ea-56b4-4b7d-8402-478d74a457fd",
-      transactionDateTime: "2025-01-31T23:59:01+07:00",
+      transactionDateTime: new Date().toISOString().replace('Z', '+07:00'),
       openChannelId: "NEXT",
       cifNo: ktbConfig.cif_no,
       cdiToken: ktbConfig.cdi_token,
@@ -74,7 +74,7 @@ async function ktbCreateAccount() {
         district: "112",
         province: "11",
         postalCode: "10400",
-        country: "11"
+        country: "Thailand"
       },
       residentialContact: {
         mobilePhone: "0999999999",
